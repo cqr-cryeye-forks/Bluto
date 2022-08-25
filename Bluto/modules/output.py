@@ -159,35 +159,33 @@ def action_output_vuln_zone(google_results, bing_results, linkedin_results, time
 
     domain_r = domain.split('.')
     docs = os.path.expanduser('~/Bluto/doc/{}/'.format(domain_r[0]))
-    answers = ['no', 'n', 'y', 'yes']
-    while True:
-        answer = input(
-            "\nWould you like to keep all local data?\n(Local Logs, Downloaded Documents, HTML Evidence Report)"
-            "\n\nYes|No:").lower()
-        if answer in answers:
-            if answer == 'y' or answer == 'yes':
-                print('\nThe documents are located here: {}'.format(docs))
-                print('The logs are located here: {}.'.format(LOG_DIR))
-                print("\nAn evidence report has been written to {}\n".format(report_location))
-                while True:
-                    answer = input("Would you like to open this report now? ").lower()
-                    if answer in answers:
-                        if answer == 'y' or answer == 'yes':
-                            print('\nOpening {}'.format(report_location))
-                            webbrowser.open('file://' + str(report_location))
-                            break
-                        else:
-                            break
-                    else:
-                        print('Your answer needs to be either yes|y|no|n rather than, {}'.format(answer))
-                break
-            else:
-                shutil.rmtree(docs)
-                shutil.rmtree(LOG_DIR)
-                os.remove(report_location)
-                break
-        else:
-            print('\tYour answer needs to be either yes|y|no|n rather than, {}'.format(answer))
+    # answers = ['no', 'n', 'y', 'yes']
+    # while True:
+        # answer = input(
+        #     "\nWould you like to keep all local data?\n(Local Logs, Downloaded Documents, HTML Evidence Report)"
+        #     "\n\nYes|No:").lower()
+    # if answer in answers:
+    #     if answer == 'y' or answer == 'yes':
+    print(f'\nThe documents are located here: {docs}')
+    print(f'The logs are located here: {LOG_DIR}.')
+    print(f"\nAn evidence report has been written to {report_location}\n")
+    # while True:
+        # answer = input("Would you like to open this report now? ").lower()
+        # if answer in answers:
+        #     if answer == 'y' or answer == 'yes':
+        #         print('\nOpening {}'.format(report_location))
+        #         webbrowser.open('file://' + str(report_location))
+        #     break
+        # else:
+        #     print('Your answer needs to be either yes|y|no|n rather than, {}'.format(answer))
+            # break
+        # else:
+        #     shutil.rmtree(docs)
+        #     shutil.rmtree(LOG_DIR)
+        #     os.remove(report_location)
+        #     break
+        # else:
+        #     print('\tYour answer needs to be either yes|y|no|n rather than, {}'.format(answer))
 
 
 def action_output_vuln_zone_hunter(google_results, bing_results, linkedin_results, time_spent_email, time_spent_total,
