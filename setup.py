@@ -22,7 +22,7 @@ setup(
         "termcolor",
         "BeautifulSoup4",
         "requests[security]",
-        "python-whois",
+        "whois @ git+https://github.com/DannyCork/python-whois",
         "lxml",
         "oletools",
         "pdfminer",
