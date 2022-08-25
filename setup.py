@@ -22,9 +22,10 @@ setup(
         "termcolor",
         "BeautifulSoup4",
         "requests[security]",
-        "pythonwhois",
+        "python-whois",
         "lxml",
         "oletools",
-        "pdfminer"
+        "pdfminer",
+        'urllib3'
     ],
 )

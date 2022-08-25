@@ -10,5 +10,3 @@ setuptools==65.3.0
 
 urllib3~=1.26.12
 python-whois@git+https://github.com/DannyCork/python-whois
-httpx[http2]
-cloudscraper~=1.2.60
