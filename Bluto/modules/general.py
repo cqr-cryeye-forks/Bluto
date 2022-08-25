@@ -8,7 +8,7 @@ import socket
 import sys
 import time
 from errno import ETIMEDOUT
-
+import random
 import dns.query
 import dns.resolver
 import dns.zone
@@ -43,10 +43,11 @@ def action_whois(domain):
         except Exception:
             print('\nThere seems to be no Registrar for this domain.')
             company = domain
-        splitup = company.lower().split()
+        splitup = domain.lower().split('.')[0]
         pattern = re.compile('|'.join(splitup))
         while True:
-            if pattern.search(domain):
+            if pattern.search(splitup):
+                company = splitup
                 info(f'Whois Results Are Good {company}')
                 print('\nThe Whois Results Look Promising: ' + colored('{}', 'green').format(company))
                 accept = input(colored('\nIs The Search Term sufficient?: ', 'green')).lower()
@@ -104,6 +105,10 @@ def action_whois(domain):
 
 
 def action_country_id(countries_file, prox):
+    def errorcheck(r):
+        return 'success' in r.json()
+
+
     info('Identifying Country')
     userCountry = ''
     originCountry = ''
@@ -119,18 +124,19 @@ def action_country_id(countries_file, prox):
     countries_dic = {k.lower(): v.lower() for k, v in t_countries_dic.items()}
     country_list = [country for country, server in list(countries_dic.items())]
     country_list = sorted([item.capitalize() for item in country_list])
+    api_keys = ['5751cce3503b56584e4b1267a7076904', 'dd763372274e9ae8aed34a55a7a4b36a']
+    proxy = {'https': 'http://127.0.0.1:8080'} if prox else {}
     while True:
         try:
-            if prox:
-                proxy = {'https': 'http://127.0.0.1:8080'}
-                r = requests.get('http://api.ipstack.com/check?access_key=dd763372274e9ae8aed34a55a7a4b36a',
-                                 proxies=proxy, verify=False)
-
-            else:
-                r = requests.get('http://api.ipstack.com/check?access_key=dd763372274e9ae8aed34a55a7a4b36a',
-                                 verify=False)
-            response = r.json()
-            # ip = response['ip']
+            while True:
+                random.Random(500)
+                key = random.choice(api_keys)
+                r = requests.get(f'http://api.ipstack.com/check?access_key={key}',
+                                     proxies=proxy, verify=False) if prox \
+                    else requests.get(f'http://api.ipstack.com/check?access_key={key}', verify=False)
+                response = r.json()
+                if 'success' not in response:
+                    break
             originCountry = response['country_name']
         except ValueError:
             if o == 0:

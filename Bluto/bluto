@@ -61,7 +61,7 @@ USERAGENT_F = path + "/Bluto/doc/user_agents.txt"
 COUNTRIES_FILE = path + "/Bluto/doc/countries.txt"
 INFO_LOG_FILE = os.path.expanduser('~/Bluto/log/bluto-info.log')
 
-version = '2.4.12'
+version = '3.0.2'
 
 title = """
  BBBBBBBBBBBBBBBBB  lllllll                       tttt
@@ -95,7 +95,7 @@ desc = """  {2} | {3} | {4} | {9}
            colored("DNS Wild Card Checks", 'green'), colored("DNS Wild Card Brute Forcer", 'green'),
            colored("Compromised Account Enumeration", 'green'), colored("MetaData Mining", 'green'))
 
-prox = True
+prox = False
 
 if __name__ == "__main__":
     info('\nBluto Started')

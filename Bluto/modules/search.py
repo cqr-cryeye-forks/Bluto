@@ -76,25 +76,30 @@ def action_pwned(emails):
     info('Compromised Account Enumeration Search Started')
     pwend_data = []
     seen = set()
+    headers = {"User-Agent": "BlutoDNS v2.4.16",
+               'hibp-api-key': 'db192f959742455f98106687df692c68'}
     for email in emails:
-        link = f'https://haveibeenpwned.com/api/v2/breachedaccount/{email}'
-        try:
-            headers = {"Connection": "close", "User-Agent": "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; WOW64; Trident/6.0)", 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Language': 'en-US,en;q=0.5', 'Accept-Encoding': 'gzip, deflate'}
+        time.sleep(3)
+        link = f'https://haveibeenpwned.com/api/v3/breachedaccount/{email}?truncateResponse=false'
 
+        try:
             response = requests.get(link, headers=headers, verify=False)
             if json_data := response.json():
                 if email not in seen:
                     for item in json_data:
+                        breach_data = ' '
                         seen.add(email)
                         email_address = email
-                        breach_domain = str(item['Domain']).replace("u'", "")
-                        breach_data = str(item['DataClasses']).replace("u'", "'").replace('"', '').replace('[', '').replace(']', '')
-
-                        breach_date = str(item['BreachDate']).replace("u'", "")
-                        breach_added = str(item['AddedDate']).replace("u'", "").replace('T', ' ').replace('Z', '')
-
-                        breach_description = str(item['Description']).replace("u'", "")
-                        pwend_data.append((email_address, breach_domain, breach_data, breach_date, breach_added, breach_description))
+                        breach_domain = item['Domain'].encode('utf-8')
+                        data = item['DataClasses']
+                        for value in data:
+                            breach_data = breach_data + value.encode('utf-8') + ', '
+                        breach_data = breach_data.strip().strip(',')[:-1]
+                        breach_date = item['BreachDate'].encode('utf-8')
+                        breach_added = item['AddedDate'].encode('utf-8')
+                        breach_description = item['Description'].encode('utf-8')
+                        pwend_data.append((email_address, breach_domain, breach_data, breach_date,
+                                           breach_added, breach_description))
 
         except ValueError:
             pass
@@ -228,7 +233,6 @@ def doc_exalead(domain, user_agents, prox, q):
                 document_list.append(document)
         except Exception:
             info(f'An Unhandled Exception Has Occurred, Please Check The Log For Details{INFO_LOG_FILE}')
-
             continue
         time.sleep(10)
     potential_docs = len(document_list)
@@ -269,6 +273,8 @@ def doc_bing(domain, user_agents, prox, q):
                 document_list.append(document)
         except requests.models.ChunkedEncodingError:
             continue
+        except TypeError:
+            pass
         except Exception:
             traceback.print_exc()
             continue
