@@ -3,18 +3,16 @@
 
 import datetime
 import os
+import random
 import re
-import socket
 import sys
 import time
-from errno import ETIMEDOUT
-import random
+
 import dns.query
 import dns.resolver
 import dns.zone
-import pythonwhois
 import requests
-from pythonwhois.shared import WhoisException
+import whois
 from termcolor import colored
 
 from .bluto_logging import info, INFO_LOG_FILE
@@ -37,9 +35,9 @@ def get_size(dir_location):
 def action_whois(domain):
     company = None
     try:
-        whois_things = pythonwhois.get_whois(domain)
+        whois_things = whois.query(domain)
         try:
-            company = whois_things['contacts']['registrant']['name']
+            company = whois_things.registrar
         except Exception:
             print('\nThere seems to be no Registrar for this domain.')
             company = domain
@@ -49,66 +47,67 @@ def action_whois(domain):
             if pattern.search(splitup):
                 company = splitup
                 info(f'Whois Results Are Good {company}')
-                print('\nThe Whois Results Look Promising: ' + colored('{}', 'green').format(company))
-                accept = input(colored('\nIs The Search Term sufficient?: ', 'green')).lower()
-                if accept in ('y', 'yes'):
-                    company = company
-                    break
-                elif accept in ('n', 'no'):
-                    temp_company = input(colored('\nRegistered Company Name: ', 'green'))
-                    if temp_company == '':
-                        info('User Supplied Blank Company')
-                        company = domain
-                    else:
-                        info(f'User Supplied Company {company}')
-                        company = temp_company
-                    break
-                else:
-                    print(f'\nThe Options Are yes|no Or y|no Not {accept}')
+                print(f"\nThe Whois Results Look Promising: {colored('{}', 'green').format(company)}. "
+                      f"Accepting is skipped")
+                # accept = input(colored('\nIs The Search Term sufficient?: ', 'green')).lower()
+                # if accept in ('y', 'yes'):
+                #     company = company
+                #     break
+                # elif accept in ('n', 'no'):
+                #     temp_company = input(colored('\nRegistered Company Name: ', 'green'))
+                #     if temp_company == '':
+                #         info('User Supplied Blank Company')
+                #         company = domain
+                #     else:
+                #         info(f'User Supplied Company {company}')
+                #         company = temp_company
+                #     break
+                # else:
+                #     print(f'\nThe Options Are yes|no Or y|no Not {accept}')
 
             else:
                 info(f'Whois Results Not Good {company}')
-                print(colored(f"\n\tThe Whois Results Don't Look Very Promising: '{company}'", "red"))
-                print('\nPlease Supply The Company Name\n\n\tThis Will Be Used To Query LinkedIn')
-                temp_company = input(colored('\nRegistered Company Name: ', 'green'))
-                if temp_company == '':
-                    info('User Supplied Blank Company')
-                    company = domain
-                else:
-                    info(f'User Supplied Company {company}')
-                    company = temp_company
-                break
-    except (WhoisException, socket.error, KeyError):
-        pass
-    except ETIMEDOUT:
+                print(colored(f"\n\tThe Whois Results Don't Look Very Promising: '{company}'. "
+                              f"Will be used: {domain}", "red"))
+                # print('\nPlease Supply The Company Name\n\n\tThis Will Be Used To Query LinkedIn')
+                company = domain
+                # temp_company = input(colored('\nRegistered Company Name: ', 'green'))
+                # if temp_company == '':
+                #     info('User Supplied Blank Company')
+                #     company = domain
+                # else:
+                #     info(f'User Supplied Company {company}')
+                #     company = temp_company
+            break
+    # except (whois.exceptions.WhoisCommandFailed, socket.error, KeyError):
+    #     pass
+    except whois.exceptions.UnknownTld:
         print(colored('\nWhoisError: You may be behind a proxy or firewall preventing whois lookups. '
                       f'Please supply the registered company name, if left blank the domain name "{domain}" will'
-                      ' be used for the Linkedin search. The results may not be as accurate.',
+                      ' be used for the Linkedin search. The results may not be as accurate. Asking is skipped',
                       'red'))
-        temp_company = input(colored('\nRegistered Company Name: ', 'green'))
-        company = domain if temp_company == '' else temp_company
+        # temp_company = input(colored('\nRegistered Company Name: ', 'green'))
+        # company = domain if temp_company == '' else temp_company
+        company = domain
     except Exception:
         info(f'An Unhandled Exception Has Occurred, Please Check The Log For Details{INFO_LOG_FILE}')
 
     if 'company' not in locals():
-        print('There is no Whois data for this domain.\n\nPlease supply a company name.')
-        while True:
-            temp_company = input(colored('\nRegistered Company Name: ', 'green'))
-            if temp_company == '':
-                info('User Supplied Blank Company')
-                company = domain
-            else:
-                company = temp_company
-                info(f'User Supplied Company {company}')
-            break
+        print(f'There is no Whois data for this domain.\n\nPlease supply a company name. We will use {domain}')
+        company = domain
+        # while True:
+        #     temp_company = input(colored('\nRegistered Company Name: ', 'green'))
+        #     if temp_company == '':
+        #         info('User Supplied Blank Company')
+        #         company = domain
+        #     else:
+        #         company = temp_company
+        #         info(f'User Supplied Company {company}')
+        #     break
     return company
 
 
 def action_country_id(countries_file, prox):
-    def errorcheck(r):
-        return 'success' in r.json()
-
-
     info('Identifying Country')
     userCountry = ''
     originCountry = ''
@@ -132,7 +131,7 @@ def action_country_id(countries_file, prox):
                 random.Random(500)
                 key = random.choice(api_keys)
                 r = requests.get(f'http://api.ipstack.com/check?access_key={key}',
-                                     proxies=proxy, verify=False) if prox \
+                                 proxies=proxy, verify=False) if prox \
                     else requests.get(f'http://api.ipstack.com/check?access_key={key}', verify=False)
                 response = r.json()
                 if 'success' not in response:
@@ -160,17 +159,20 @@ def action_country_id(countries_file, prox):
         l2 = country_list[split:]
         for key, value in zip(l1, l2):
             print("{0:<20s} {1}".format(key, value))
-        country_list = [item.lower() for item in country_list]
-        while True:
-            originCountry = input('\nCountry: ').lower()
-            if originCountry in country_list:
-                break
-            if originCountry == '':
-                print('\nYou have not selected a country so the default server will be used')
-                originCountry = 'United Kingdom'.lower()
-                break
-            else:
-                print('\nCheck your spelling and try again')
+
+        originCountry = 'United Kingdom'.lower()
+        print(f'\nYou have not selected a country so the default server will be used. {originCountry} is selected')
+        # country_list = [item.lower() for item in country_list]
+        # while True:
+        #     originCountry = input('\nCountry: ').lower()
+        #     if originCountry in country_list:
+        #         break
+        #     if originCountry == '':
+        #         print('\nYou have not selected a country so the default server will be used')
+        #         originCountry = 'United Kingdom'.lower()
+        #         break
+        #     else:
+        #         print('\nCheck your spelling and try again')
         for country, server in list(countries_dic.items()):
             if country == originCountry:
                 userCountry = country

@@ -48,7 +48,7 @@ def action_google(domain, userCountry, userServer, q, user_agents, prox):
                     clean = re.sub('</em>', '', email_temp.text)
                     match = re.findall('[a-zA-Z0-9.]*' + '@' + domain, clean)
                     with contextlib.suppress(Exception):
-                        if match and match is not f'@{domain}' and match is not '@':
+                        if match and match != f'@{domain}' and match != '@':
                             url = div.find('cite').text
                             email = str(match).replace("u'", '').replace('[', '').replace(']', '').replace("'", '')
                             entries_tuples.append((email.lower(), str(url).replace("u'", '').replace("'", "")))
@@ -104,7 +104,8 @@ def action_pwned(emails):
         except ValueError:
             pass
         except Exception:
-            info('An Unhandled Exception Has Occurred, Please Check The Log For Details\n' + INFO_LOG_FILE, exc_info=True)
+            info('An Unhandled Exception Has Occurred, Please Check The Log For Details\n' + INFO_LOG_FILE,
+                 exc_info=True)
 
     info('Compromised Account Enumeration Search Completed')
     return pwend_data
@@ -120,7 +121,8 @@ def action_emailHunter(domain, api, user_agents, q, prox):
 
     proxy = {'http': 'http://127.0.0.1:8080'} if prox else {}
     try:
-        headers = {"User-Agent": ua, 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Language': 'en-US,en;q=0.5', 'Accept-Encoding': 'gzip, deflate'}
+        headers = {"User-Agent": ua, 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                   'Accept-Language': 'en-US,en;q=0.5', 'Accept-Encoding': 'gzip, deflate'}
 
         response = requests.get(link, headers=headers, proxies=proxy, verify=False) if prox \
             else requests.get(link, headers=headers, verify=False)
@@ -309,16 +311,16 @@ def action_linkedin(domain, userCountry, q, company, user_agents, prox):
                 url = div.find('cite').text.encode('utf-8')
                 person = str(title_temp.split(' | ')[0])
                 description_temp = div.find('div', {'class': 'b_caption'})
-                description = description_temp.find('p').text.encode('utf-8').lstrip('View ').replace("’s", "")\
-                    .replace("professional profile on LinkedIn. ... ", "")\
+                description = description_temp.find('p').text.encode('utf-8').lstrip('View ').replace("’s", "") \
+                    .replace("professional profile on LinkedIn. ... ", "") \
                     .replace(" professional profile on LinkedIn. LinkedIn is the world's largest "
-                             "business network, ...", "").replace("’S", "").replace("’", "")\
-                    .replace("professional profile on LinkedIn.", "").replace(person, '').lstrip(' ')\
+                             "business network, ...", "").replace("’S", "").replace("’", "") \
+                    .replace("professional profile on LinkedIn.", "").replace(person, '').lstrip(' ') \
                     .lstrip('. ').replace("LinkedIn is the world's largest business network,"
-                                          " helping professionals like  discover ...", "")\
+                                          " helping professionals like  discover ...", "") \
                     .replace("LinkedIn is the world's largest business network, helping "
-                             "professionals like  discover inside ...", "")\
-                    .replace("professional profile on ... • ", "").replace("professional ... ", "")\
+                             "professionals like  discover inside ...", "") \
+                    .replace("professional profile on ... • ", "").replace("professional ... ", "") \
                     .replace("...", "").lstrip('•').lstrip(' ')
 
                 entries_tuples.append((url, person.title(), description))
@@ -337,10 +339,15 @@ def action_netcraft(domain, myResolver):
     netcraft_list = []
     print("\nPassive Gatherings From NetCraft\n")
     sub_results = None
-    link = f"http://searchdns.netcraft.com/?restriction=site+contains&host=*.{domain}&lookup=wait..&position=limited"
+    link = f"https://searchdns.netcraft.com/?restriction=site+contains&host=*.{domain}&lookup=wait..&position=limited"
+
     try:
-        response = requests.get(link, verify=False)
-        # soup = BeautifulSoup(response.content, 'lxml')
+        s = requests.session()
+        response = s.get(link)
+        if response.status_code == 403:
+            print("You are not registered in https://searchdns.netcraft.com. Skipping. (NetCraft cloudflare problem)")
+            return []
+        soup = BeautifulSoup(response.content, 'lxml')
         pattern = b'rel="nofollow">([a-z\.\-A-Z0-9]+)<FONT COLOR="#ff0000">'
         sub_results = re.findall(pattern, response.content)
     except dns.exception.Timeout:
@@ -360,7 +367,8 @@ def action_netcraft(domain, myResolver):
             except dns.resolver.NXDOMAIN:
                 pass
             except Exception:
-                info('An Unhandled Exception Has Occurred, Please Check The Log For Details\n' + INFO_LOG_FILE, exc_info=True)
+                info('An Unhandled Exception Has Occurred, Please Check The Log For Details\n' + INFO_LOG_FILE,
+                     exc_info=True)
 
     else:
         print('\tNo Results Found')
