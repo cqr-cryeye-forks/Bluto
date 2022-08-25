@@ -1,16 +1,15 @@
-#!/usr/bin/python
+#!/usr/bin/python3.10
 
 import logging
-import sys
-import site
 import os
+
 LOG_DIR = os.path.expanduser('~/Bluto/log/')
-INFO_LOG_FILE = os.path.expanduser(LOG_DIR + 'bluto-info.log')
+INFO_LOG_FILE = os.path.expanduser(f'{LOG_DIR}bluto-info.log')
 
 if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)
-    os.chmod(LOG_DIR, 0700)
-    open(INFO_LOG_FILE,'a').close()
+    os.chmod(LOG_DIR, 0o700)
+    open(INFO_LOG_FILE, 'a').close()
 
 # set up formatting
 formatter = logging.Formatter('[%(asctime)s] %(module)s: %(message)s')

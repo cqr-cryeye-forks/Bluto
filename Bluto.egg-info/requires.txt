@@ -7,3 +7,4 @@ pythonwhois
 lxml
 oletools
 pdfminer
+urllib3

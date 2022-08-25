@@ -1,11 +1,11 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 
 setup(
     name='Bluto',
-    version='2.4.13',
-    author='Darryl lane',
-    author_email='DarrylLane101@gmail.com',
-    url='https://github.com/darryllane/Bluto',
+    version='3.0.1',
+    author='Mykola Borshchov',
+    author_email='nickolaiborshchov@gmail.com',
+    url='https://github.com/cqr-cryeye-forks/Bluto',
     packages=['Bluto'],
     include_package_data=True,
     license='LICENSE.txt',
@@ -16,7 +16,7 @@ setup(
     long_description=open('README.md').read(),
     scripts=['Bluto/bluto'],
     install_requires=[
-    	"docopt",
+        "docopt",
         "dnspython",
         "termcolor",
         "BeautifulSoup4",
@@ -27,4 +27,3 @@ setup(
         "pdfminer"
     ],
 )
-

@@ -1,18 +1,20 @@
-#!/usr/local/bin/python
+#!/usr/local/bin/python3.10
 # -*- coding: utf-8 -*-
 
-from termcolor import colored
-import traceback
 import collections
 import datetime
-import webbrowser
-import shutil
 import os
-from search import action_pwned
-from bluto_logging import info, INFO_LOG_FILE, LOG_DIR
+import shutil
+import webbrowser
+
+from termcolor import colored
+
+from .bluto_logging import info, LOG_DIR
+from .search import action_pwned
 
 
-def action_output_vuln_zone(google_results, bing_results, linkedin_results, time_spent_email, time_spent_total, clean_dump, sub_intrest, domain, report_location, company, data_mine):
+def action_output_vuln_zone(google_results, bing_results, linkedin_results, time_spent_email, time_spent_total,
+                            clean_dump, sub_interest, domain, report_location, company, data_mine):
     info('Output action_output_vuln_zone: Start')
     linkedin_evidence_results = []
     email_evidence_results = []
@@ -27,16 +29,16 @@ def action_output_vuln_zone(google_results, bing_results, linkedin_results, time
             e1, e2 = email.split(',')
             if url not in email_seen:
                 email_seen.append(url)
-                email_evidence_results.append((str(e2).replace(' ',''),url))
-                email_evidence_results.append((str(e1).replace(' ',''),url))
-                email_results.append((str(e2).replace(' ','')))
-                email_results.append((str(e1).replace(' ','')))
+                email_evidence_results.append((str(e2).replace(' ', ''), url))
+                email_evidence_results.append((str(e1).replace(' ', ''), url))
+                email_results.append((str(e2).replace(' ', '')))
+                email_results.append((str(e1).replace(' ', '')))
 
         except ValueError:
             if url not in email_seen:
                 email_seen.append(url)
-                email_evidence_results.append((str(email).replace(' ',''),url))
-                email_results.append(str(email).replace(' ',''))
+                email_evidence_results.append((str(email).replace(' ', ''), url))
+                email_results.append(str(email).replace(' ', ''))
 
     for e, u in bing_results:
         email_results.append(e)
@@ -63,56 +65,55 @@ def action_output_vuln_zone(google_results, bing_results, linkedin_results, time
     pwned_results = action_pwned(f_emails)
     c_accounts = len(pwned_results)
 
-    print '\n\nEmail Addresses:\n'
+    print('\n\nEmail Addresses:\n')
     write_html(email_evidence_results, linkedin_evidence_results, pwned_results, report_location, company, data_mine)
     if f_emails:
         for email in f_emails:
-
-            print str(email).replace("u'","").replace("'","").replace('[','').replace(']','')
+            print(str(email).replace("u'", "").replace("'", "").replace('[', '').replace(']', ''))
     else:
-        print '\tNo Data To Be Found'
+        print('\tNo Data To Be Found')
 
-    print '\nCompromised Accounts:\n'
+    print('\nCompromised Accounts:\n')
     if pwned_results:
         sorted_pwned = sorted(pwned_results)
         for account in sorted_pwned:
-            print 'Account: \t{}'.format(account[0])
-            print 'Domain: \t{}'.format(account[1])
-            print 'Date: \t{}\n'.format(account[3])
+            print('Account: \t{}'.format(account[0]))
+            print('Domain: \t{}'.format(account[1]))
+            print('Date: \t{}\n'.format(account[3]))
     else:
-        print '\tNo Data To Be Found'
+        print('\tNo Data To Be Found')
 
-    print '\nLinkedIn Results:\n'
+    print('\nLinkedIn Results:\n')
 
     sorted_person = sorted(person_seen)
     if sorted_person:
         for person in sorted_person:
-            print person
+            print(person)
     else:
-        print '\tNo Data To Be Found'
+        print('\tNo Data To Be Found')
 
     if data_mine is not None:
         user_names = data_mine[0]
         software_list = data_mine[1]
         download_count = data_mine[2]
-        download_list = data_mine[3]
+        # download_list = data_mine[3]
         username_count = len(user_names)
         software_count = len(software_list)
 
-        print '\nData Found In Document MetaData'
-        print '\nPotential Usernames:\n'
+        print('\nData Found In Document MetaData')
+        print('\nPotential Usernames:\n')
         if user_names:
             for user in user_names:
-                print '\t' + colored(user, 'red')
+                print('\t' + colored(user, 'red'))
         else:
-            print '\tNo Data To Be Found'
+            print('\tNo Data To Be Found')
 
-        print '\nSoftware And Versions Found:\n'
+        print('\nSoftware And Versions Found:\n')
         if software_list:
             for software in software_list:
-                print '\t' + colored(software, 'red')
+                print('\t' + colored(software, 'red'))
         else:
-            print '\tNo Data To Be Found'
+            print('\tNo Data To Be Found')
     else:
         user_names = []
         software_list = []
@@ -122,62 +123,63 @@ def action_output_vuln_zone(google_results, bing_results, linkedin_results, time
 
     target_dict = dict((x.split(' ') for x in clean_dump))
     clean_target = collections.OrderedDict(sorted(target_dict.items()))
-    print "\nProcessed Dump\n"
+    print("\nProcessed Dump\n")
 
     bruted_count = len(clean_target)
     for item in clean_target:
-        if item in sub_intrest:
-            print colored(item, 'red'), colored("\t" + clean_target[item], 'red')
+        if item in sub_interest:
+            print(colored(item, 'red'), colored("\t" + clean_target[item], 'red'))
         else:
-            print item, "\t" + target_dict[item]
+            print(item, "\t" + target_dict[item])
 
-    time_spent_email_f = str(datetime.timedelta(seconds=(time_spent_email))).split('.')[0]
-    time_spent_total_f = str(datetime.timedelta(seconds=(time_spent_total))).split('.')[0]
+    time_spent_email_f = str(datetime.timedelta(seconds=time_spent_email)).split('.')[0]
+    time_spent_total_f = str(datetime.timedelta(seconds=time_spent_total)).split('.')[0]
 
-    print '\nHosts Identified: {}' .format(str(bruted_count))
-    print 'Potential Emails Found: {}' .format(str(email_count))
-    print 'Potential Staff Members Found: {}' .format(str(staff_count))
-    print 'Compromised Accounts: {}' .format(str(c_accounts))
-    print 'Potential Usernames Found: {}'.format(username_count)
-    print 'Potential Software Found: {}'.format(software_count)
-    print 'Documents Downloaded: {}'.format(download_count)
-    print "Email Enumeration:", time_spent_email_f
-    print "Total Time:", time_spent_total_f
+    print('\nHosts Identified: {}'.format(str(bruted_count)))
+    print('Potential Emails Found: {}'.format(str(email_count)))
+    print('Potential Staff Members Found: {}'.format(str(staff_count)))
+    print('Compromised Accounts: {}'.format(str(c_accounts)))
+    print('Potential Usernames Found: {}'.format(username_count))
+    print('Potential Software Found: {}'.format(software_count))
+    print('Documents Downloaded: {}'.format(download_count))
+    print("Email Enumeration:", time_spent_email_f)
+    print("Total Time:", time_spent_total_f)
 
-    info('Hosts Identified: {}' .format(str(bruted_count)))
-    info("Total Time:" .format(str(time_spent_total_f)))
-    info("Email Enumeration: {}" .format(str(time_spent_email_f)))
-    info('Compromised Accounts: {}' .format(str(c_accounts)))
+    info('Hosts Identified: {}'.format(str(bruted_count)))
+    info("Total Time:".format(str(time_spent_total_f)))
+    info("Email Enumeration: {}".format(str(time_spent_email_f)))
+    info('Compromised Accounts: {}'.format(str(c_accounts)))
     info('Potential Usernames Found: {}'.format(username_count))
     info('Potential Software Found: {}'.format(software_count))
     info('Documents Downloaded: {}'.format(download_count))
-    info('Potential Staff Members Found: {}' .format(str(staff_count)))
-    info('Potential Emails Found: {}' .format(str(email_count)))
+    info('Potential Staff Members Found: {}'.format(str(staff_count)))
+    info('Potential Emails Found: {}'.format(str(email_count)))
     info('DNS Vuln Run completed')
     info('Output action_output_vuln_zone: Complete')
 
     domain_r = domain.split('.')
     docs = os.path.expanduser('~/Bluto/doc/{}/'.format(domain_r[0]))
-    answers = ['no','n','y','yes']
+    answers = ['no', 'n', 'y', 'yes']
     while True:
-        answer = raw_input("\nWould you like to keep all local data?\n(Local Logs, Downloded Documents, HTML Evidence Report)\n\nYes|No:").lower()
+        answer = input(
+            "\nWould you like to keep all local data?\n(Local Logs, Downloaded Documents, HTML Evidence Report)"
+            "\n\nYes|No:").lower()
         if answer in answers:
             if answer == 'y' or answer == 'yes':
-                domain
-                print '\nThe documents are located here: {}'.format(docs)
-                print 'The logs are located here: {}.'.format(LOG_DIR)
-                print "\nAn evidence report has been written to {}\n".format(report_location)
+                print('\nThe documents are located here: {}'.format(docs))
+                print('The logs are located here: {}.'.format(LOG_DIR))
+                print("\nAn evidence report has been written to {}\n".format(report_location))
                 while True:
-                    answer = raw_input("Would you like to open this report now? ").lower()
+                    answer = input("Would you like to open this report now? ").lower()
                     if answer in answers:
                         if answer == 'y' or answer == 'yes':
-                            print '\nOpening {}' .format(report_location)
+                            print('\nOpening {}'.format(report_location))
                             webbrowser.open('file://' + str(report_location))
                             break
                         else:
                             break
                     else:
-                        print 'Your answer needs to be either yes|y|no|n rather than, {}' .format(answer)
+                        print('Your answer needs to be either yes|y|no|n rather than, {}'.format(answer))
                 break
             else:
                 shutil.rmtree(docs)
@@ -185,10 +187,13 @@ def action_output_vuln_zone(google_results, bing_results, linkedin_results, time
                 os.remove(report_location)
                 break
         else:
-            print '\tYour answer needs to be either yes|y|no|n rather than, {}' .format(answer)
+            print('\tYour answer needs to be either yes|y|no|n rather than, {}'.format(answer))
 
 
-def action_output_vuln_zone_hunter(google_results, bing_results, linkedin_results, time_spent_email, time_spent_total, clean_dump, sub_intrest, domain, emailHunter_results, args, report_location, company, data_mine):
+def action_output_vuln_zone_hunter(google_results, bing_results, linkedin_results, time_spent_email, time_spent_total,
+                                   clean_dump, sub_interest, domain, emailHunter_results, args, report_location,
+                                   company,
+                                   data_mine):
     info('Output action_output_vuln_zone_hunter: Start')
     linkedin_evidence_results = []
     email_evidence_results = []
@@ -201,23 +206,23 @@ def action_output_vuln_zone_hunter(google_results, bing_results, linkedin_result
     if emailHunter_results is not None:
         for email in emailHunter_results:
             email_results.append(email[0])
-            email_evidence_results.append((email[0],email[1]))
+            email_evidence_results.append((email[0], email[1]))
 
     for email, url in google_results:
         try:
             e1, e2 = email.split(',')
             if url not in email_seen:
                 email_seen.append(url)
-                email_evidence_results.append((str(e2).replace(' ',''),url))
-                email_evidence_results.append((str(e1).replace(' ',''),url))
-                email_results.append((str(e2).replace(' ','')))
-                email_results.append((str(e1).replace(' ','')))
+                email_evidence_results.append((str(e2).replace(' ', ''), url))
+                email_evidence_results.append((str(e1).replace(' ', ''), url))
+                email_results.append((str(e2).replace(' ', '')))
+                email_results.append((str(e1).replace(' ', '')))
 
         except ValueError:
             if url not in email_seen:
                 email_seen.append(url)
-                email_evidence_results.append((str(email).replace(' ',''),url))
-                email_results.append(str(email).replace(' ',''))
+                email_evidence_results.append((str(email).replace(' ', ''), url))
+                email_results.append(str(email).replace(' ', ''))
 
     for e, u in bing_results:
         email_results.append(e)
@@ -244,32 +249,32 @@ def action_output_vuln_zone_hunter(google_results, bing_results, linkedin_result
     pwned_results = action_pwned(f_emails)
     c_accounts = len(pwned_results)
 
-    print '\n\nEmail Addresses:\n'
+    print('\n\nEmail Addresses:\n')
     write_html(email_evidence_results, linkedin_evidence_results, pwned_results, report_location, company, data_mine)
     if f_emails:
         for email in f_emails:
-            print str(email).replace("u'","").replace("'","").replace('[','').replace(']','')
+            print(str(email).replace("u'", "").replace("'", "").replace('[', '').replace(']', ''))
     else:
-        print '\tNo Data To Be Found'
+        print('\tNo Data To Be Found')
 
-    print '\nCompromised Accounts:\n'
+    print('\nCompromised Accounts:\n')
     if pwned_results:
         sorted_pwned = sorted(pwned_results)
         for account in sorted_pwned:
-            print 'Account: \t{}'.format(account[0])
-            print 'Domain: \t{}'.format(account[1])
-            print 'Date: \t{}\n'.format(account[3])
+            print('Account: \t{}'.format(account[0]))
+            print('Domain: \t{}'.format(account[1]))
+            print('Date: \t{}\n'.format(account[3]))
     else:
-        print '\tNo Data To Be Found'
+        print('\tNo Data To Be Found')
 
-    print '\nLinkedIn Results:\n'
+    print('\nLinkedIn Results:\n')
 
     sorted_person = sorted(person_seen)
     if sorted_person:
         for person in sorted_person:
-            print person
+            print(person)
     else:
-        print '\tNo Data To Be Found'
+        print('\tNo Data To Be Found')
 
     if data_mine is not None:
         user_names = data_mine[0]
@@ -279,20 +284,20 @@ def action_output_vuln_zone_hunter(google_results, bing_results, linkedin_result
         username_count = len(user_names)
         software_count = len(software_list)
 
-        print '\nData Found In Document MetaData'
-        print '\nPotential Usernames:\n'
+        print('\nData Found In Document MetaData')
+        print('\nPotential Usernames:\n')
         if user_names:
             for user in user_names:
-                print '\t' + colored(user, 'red')
+                print('\t' + colored(user, 'red'))
         else:
-            print '\tNo Data To Be Found'
+            print('\tNo Data To Be Found')
 
-        print '\nSoftware And Versions Found:\n'
+        print('\nSoftware And Versions Found:\n')
         if software_list:
             for software in software_list:
-                print '\t' + colored(software, 'red')
+                print('\t' + colored(software, 'red'))
         else:
-            print '\tNo Data To Be Found'
+            print('\tNo Data To Be Found')
     else:
         user_names = []
         software_list = []
@@ -303,61 +308,61 @@ def action_output_vuln_zone_hunter(google_results, bing_results, linkedin_result
     target_dict = dict((x.split(' ') for x in clean_dump))
     clean_target = collections.OrderedDict(sorted(target_dict.items()))
 
-    print "\nProcessed Dump\n"
+    print("\nProcessed Dump\n")
     bruted_count = len(clean_target)
     for item in clean_target:
-        if item in sub_intrest:
-            print colored(item, 'red'), colored("\t" + clean_target[item], 'red')
+        if item in sub_interest:
+            print(colored(item, 'red'), colored("\t" + clean_target[item], 'red'))
         else:
-            print item, "\t" + target_dict[item]
+            print(item, "\t" + target_dict[item])
 
     time_spent_email_f = str(datetime.timedelta(seconds=(time_spent_email))).split('.')[0]
     time_spent_total_f = str(datetime.timedelta(seconds=(time_spent_total))).split('.')[0]
 
-    print '\nHosts Identified: {}' .format(str(bruted_count))
-    print 'Potential Emails Found: {}' .format(str(email_count))
-    print 'Potential Staff Members Found: {}' .format(str(staff_count))
-    print 'Compromised Accounts: {}' .format(str(c_accounts))
-    print 'Potential Usernames Found: {}'.format(username_count)
-    print 'Potential Software Found: {}'.format(software_count)
-    print 'Documents Downloaded: {}'.format(download_count)
-    print "Email Enumeration:", time_spent_email_f
-    print "Total Time:", time_spent_total_f
+    print('\nHosts Identified: {}'.format(str(bruted_count)))
+    print('Potential Emails Found: {}'.format(str(email_count)))
+    print('Potential Staff Members Found: {}'.format(str(staff_count)))
+    print('Compromised Accounts: {}'.format(str(c_accounts)))
+    print('Potential Usernames Found: {}'.format(username_count))
+    print('Potential Software Found: {}'.format(software_count))
+    print('Documents Downloaded: {}'.format(download_count))
+    print("Email Enumeration:", time_spent_email_f)
+    print("Total Time:", time_spent_total_f)
 
-    info('Hosts Identified: {}' .format(str(bruted_count)))
-    info("Total Time:" .format(str(time_spent_total_f)))
-    info("Email Enumeration: {}" .format(str(time_spent_email_f)))
-    info('Compromised Accounts: {}' .format(str(c_accounts)))
+    info('Hosts Identified: {}'.format(str(bruted_count)))
+    info("Total Time:".format(str(time_spent_total_f)))
+    info("Email Enumeration: {}".format(str(time_spent_email_f)))
+    info('Compromised Accounts: {}'.format(str(c_accounts)))
     info('Potential Usernames Found: {}'.format(username_count))
     info('Potential Software Found: {}'.format(software_count))
     info('Documents Downloaded: {}'.format(download_count))
-    info('Potential Staff Members Found: {}' .format(str(staff_count)))
-    info('Potential Emails Found: {}' .format(str(email_count)))
+    info('Potential Staff Members Found: {}'.format(str(staff_count)))
+    info('Potential Emails Found: {}'.format(str(email_count)))
     info('DNS Vuln Run completed')
     info('Output action_output_vuln_zone_hunter: Completed')
 
     domain_r = domain.split('.')
     docs = os.path.expanduser('~/Bluto/doc/{}/'.format(domain_r[0]))
-    answers = ['no','n','y','yes']
+    answers = ['no', 'n', 'y', 'yes']
     while True:
-        answer = raw_input("\nWould you like to keep all local data?\n(Local Logs, Downloded Documents, HTML Evidence Report)\n\nYes|No:").lower()
+        answer = input(
+            "\nWould you like to keep all local data?\n(Local Logs, Downloaded Documents, HTML Evidence Report)\n\nYes|No:").lower()
         if answer in answers:
             if answer == 'y' or answer == 'yes':
-                domain
-                print '\nThe documents are located here: {}'.format(docs)
-                print 'The logs are located here: {}.'.format(LOG_DIR)
-                print "\nAn evidence report has been written to {}\n".format(report_location)
+                print('\nThe documents are located here: {}'.format(docs))
+                print('The logs are located here: {}.'.format(LOG_DIR))
+                print("\nAn evidence report has been written to {}\n".format(report_location))
                 while True:
-                    answer = raw_input("Would you like to open this report now? ").lower()
+                    answer = input("Would you like to open this report now? ").lower()
                     if answer in answers:
                         if answer == 'y' or answer == 'yes':
-                            print '\nOpening {}' .format(report_location)
+                            print('\nOpening {}'.format(report_location))
                             webbrowser.open('file://' + str(report_location))
                             break
                         else:
                             break
                     else:
-                        print 'Your answer needs to be either yes|y|no|n rather than, {}' .format(answer)
+                        print('Your answer needs to be either yes|y|no|n rather than, {}'.format(answer))
                 break
             else:
                 shutil.rmtree(docs)
@@ -365,10 +370,12 @@ def action_output_vuln_zone_hunter(google_results, bing_results, linkedin_result
                 os.remove(report_location)
                 break
         else:
-            print '\tYour answer needs to be either yes|y|no|n rather than, {}' .format(answer)
+            print('\tYour answer needs to be either yes|y|no|n rather than, {}'.format(answer))
 
 
-def action_output_wild_false(brute_results_dict, sub_intrest, google_results, bing_true_results, linkedin_results, check_count, domain, time_spent_email, time_spent_brute, time_spent_total, report_location, company, data_mine):
+def action_output_wild_false(brute_results_dict, sub_interest, google_results, bing_true_results, linkedin_results,
+                             check_count, domain, time_spent_email, time_spent_brute, time_spent_total, report_location,
+                             company, data_mine):
     info('Output action_output_wild_false: Start')
     linkedin_evidence_results = []
     email_evidence_results = []
@@ -383,16 +390,16 @@ def action_output_wild_false(brute_results_dict, sub_intrest, google_results, bi
             e1, e2 = email.split(',')
             if url not in email_seen:
                 email_seen.append(url)
-                email_evidence_results.append((str(e2).replace(' ',''),url))
-                email_evidence_results.append((str(e1).replace(' ',''),url))
-                email_results.append((str(e2).replace(' ','')))
-                email_results.append((str(e1).replace(' ','')))
+                email_evidence_results.append((str(e2).replace(' ', ''), url))
+                email_evidence_results.append((str(e1).replace(' ', ''), url))
+                email_results.append((str(e2).replace(' ', '')))
+                email_results.append((str(e1).replace(' ', '')))
 
         except ValueError:
             if url not in email_seen:
                 email_seen.append(url)
-                email_evidence_results.append((str(email).replace(' ',''),url))
-                email_results.append(str(email).replace(' ',''))
+                email_evidence_results.append((str(email).replace(' ', ''), url))
+                email_results.append(str(email).replace(' ', ''))
 
     for e, u in bing_true_results:
         email_results.append(e)
@@ -419,34 +426,33 @@ def action_output_wild_false(brute_results_dict, sub_intrest, google_results, bi
     pwned_results = action_pwned(f_emails)
     c_accounts = len(pwned_results)
 
-    print '\n\nEmail Addresses:\n'
+    print('\n\nEmail Addresses:\n')
     write_html(email_evidence_results, linkedin_evidence_results, pwned_results, report_location, company, data_mine)
     if f_emails:
 
         for email in f_emails:
-
-            print str(email).replace("u'","").replace("'","").replace('[','').replace(']','')
+            print(str(email).replace("u'", "").replace("'", "").replace('[', '').replace(']', ''))
     else:
-        print '\tNo Data To Be Found'
+        print('\tNo Data To Be Found')
 
-    print '\nCompromised Accounts:\n'
+    print('\nCompromised Accounts:\n')
     if pwned_results:
         sorted_pwned = sorted(pwned_results)
         for account in sorted_pwned:
-            print 'Account: \t{}'.format(account[0])
-            print 'Domain: \t{}'.format(account[1])
-            print 'Date: \t{}\n'.format(account[3])
+            print('Account: \t{}'.format(account[0]))
+            print('Domain: \t{}'.format(account[1]))
+            print('Date: \t{}\n'.format(account[3]))
     else:
-        print '\tNo Data To Be Found'
+        print('\tNo Data To Be Found')
 
-    print '\nLinkedIn Results:\n'
+    print('\nLinkedIn Results:\n')
 
     sorted_person = sorted(person_seen)
     if sorted_person:
         for person in sorted_person:
-            print person
+            print(person)
     else:
-        print '\tNo Data To Be Found'
+        print('\tNo Data To Be Found')
 
     if data_mine is not None:
         user_names = data_mine[0]
@@ -456,20 +462,20 @@ def action_output_wild_false(brute_results_dict, sub_intrest, google_results, bi
         username_count = len(user_names)
         software_count = len(software_list)
 
-        print '\nData Found In Document MetaData'
-        print '\nPotential Usernames:\n'
+        print('\nData Found In Document MetaData')
+        print('\nPotential Usernames:\n')
         if user_names:
             for user in user_names:
-                print '\t' + colored(user, 'red')
+                print('\t' + colored(user, 'red'))
         else:
-            print '\tNo Data To Be Found'
+            print('\tNo Data To Be Found')
 
-        print '\nSoftware And Versions Found:\n'
+        print('\nSoftware And Versions Found:\n')
         if software_list:
             for software in software_list:
-                print '\t' + colored(software, 'red')
+                print('\t' + colored(software, 'red'))
         else:
-            print '\tNo Data To Be Found'
+            print('\tNo Data To Be Found')
     else:
         user_names = []
         software_list = []
@@ -479,63 +485,62 @@ def action_output_wild_false(brute_results_dict, sub_intrest, google_results, bi
 
     sorted_dict = collections.OrderedDict(sorted(brute_results_dict.items()))
     bruted_count = len(sorted_dict)
-    print "\nBluto Results: \n"
+    print("\nBluto Results: \n")
     for item in sorted_dict:
-        if item in sub_intrest:
-            print colored(item + "\t", 'red'), colored(sorted_dict[item], 'red')
+        if item in sub_interest:
+            print(colored(item + "\t", 'red'), colored(sorted_dict[item], 'red'))
         else:
-            print item + "\t",sorted_dict[item]
-
+            print(item + "\t", sorted_dict[item])
 
     time_spent_email_f = str(datetime.timedelta(seconds=(time_spent_email))).split('.')[0]
     time_spent_brute_f = str(datetime.timedelta(seconds=(time_spent_brute))).split('.')[0]
     time_spent_total_f = str(datetime.timedelta(seconds=(time_spent_total))).split('.')[0]
 
-    print '\nHosts Identified: {}' .format(str(bruted_count))
-    print 'Potential Emails Found: {}' .format(str(email_count))
-    print 'Potential Staff Members Found: {}' .format(str(staff_count))
-    print 'Compromised Accounts: {}' .format(str(c_accounts))
-    print 'Potential Usernames Found: {}'.format(username_count)
-    print 'Potential Software Found: {}'.format(software_count)
-    print 'Documents Downloaded: {}'.format(download_count)
-    print "Email Enumeration:", time_spent_email_f
-    print "Requests executed:", str(check_count) + " in ", time_spent_brute_f
-    print "Total Time:", time_spent_total_f
+    print('\nHosts Identified: {}'.format(str(bruted_count)))
+    print('Potential Emails Found: {}'.format(str(email_count)))
+    print('Potential Staff Members Found: {}'.format(str(staff_count)))
+    print('Compromised Accounts: {}'.format(str(c_accounts)))
+    print('Potential Usernames Found: {}'.format(username_count))
+    print('Potential Software Found: {}'.format(software_count))
+    print('Documents Downloaded: {}'.format(download_count))
+    print("Email Enumeration:", time_spent_email_f)
+    print("Requests executed:", str(check_count) + " in ", time_spent_brute_f)
+    print("Total Time:", time_spent_total_f)
 
-    info('Hosts Identified: {}' .format(str(bruted_count)))
-    info("Email Enumeration: {}" .format(str(time_spent_email_f)))
-    info('Compromised Accounts: {}' .format(str(c_accounts)))
-    info('Potential Staff Members Found: {}' .format(str(staff_count)))
-    info('Potential Emails Found: {}' .format(str(email_count)))
+    info('Hosts Identified: {}'.format(str(bruted_count)))
+    info("Email Enumeration: {}".format(str(time_spent_email_f)))
+    info('Compromised Accounts: {}'.format(str(c_accounts)))
+    info('Potential Staff Members Found: {}'.format(str(staff_count)))
+    info('Potential Emails Found: {}'.format(str(email_count)))
     info('Potential Usernames Found: {}'.format(username_count))
     info('Potential Software Found: {}'.format(software_count))
     info('Documents Downloaded: {}'.format(download_count))
-    info("Total Time:" .format(str(time_spent_total_f)))
+    info("Total Time:".format(str(time_spent_total_f)))
     info('DNS No Wild Cards + Email Hunter Run completed')
     info('Output action_output_wild_false: Completed')
 
     domain_r = domain.split('.')
     docs = os.path.expanduser('~/Bluto/doc/{}/'.format(domain_r[0]))
-    answers = ['no','n','y','yes']
+    answers = ['no', 'n', 'y', 'yes']
     while True:
-        answer = raw_input("\nWould you like to keep all local data?\n(Local Logs, Downloded Documents, HTML Evidence Report)\n\nYes|No:").lower()
+        answer = input(
+            "\nWould you like to keep all local data?\n(Local Logs, Downloaded Documents, HTML Evidence Report)\n\nYes|No:").lower()
         if answer in answers:
             if answer == 'y' or answer == 'yes':
-                domain
-                print '\nThe documents are located here: {}'.format(docs)
-                print 'The logs are located here: {}.'.format(LOG_DIR)
-                print "\nAn evidence report has been written to {}\n".format(report_location)
+                print('\nThe documents are located here: {}'.format(docs))
+                print('The logs are located here: {}.'.format(LOG_DIR))
+                print("\nAn evidence report has been written to {}\n".format(report_location))
                 while True:
-                    answer = raw_input("Would you like to open this report now? ").lower()
+                    answer = input("Would you like to open this report now? ").lower()
                     if answer in answers:
                         if answer == 'y' or answer == 'yes':
-                            print '\nOpening {}' .format(report_location)
+                            print('\nOpening {}'.format(report_location))
                             webbrowser.open('file://' + str(report_location))
                             break
                         else:
                             break
                     else:
-                        print 'Your answer needs to be either yes|y|no|n rather than, {}' .format(answer)
+                        print('Your answer needs to be either yes|y|no|n rather than, {}'.format(answer))
                 break
             else:
                 shutil.rmtree(docs)
@@ -543,10 +548,12 @@ def action_output_wild_false(brute_results_dict, sub_intrest, google_results, bi
                 os.remove(report_location)
                 break
         else:
-            print '\tYour answer needs to be either yes|y|no|n rather than, {}' .format(answer)
+            print('\tYour answer needs to be either yes|y|no|n rather than, {}'.format(answer))
 
 
-def action_output_wild_false_hunter(brute_results_dict, sub_intrest, google_results, bing_true_results, linkedin_results, check_count, domain, time_spent_email, time_spent_brute, time_spent_total, emailHunter_results, args, report_location, company, data_mine):
+def action_output_wild_false_hunter(brute_results_dict, sub_interest, google_results, bing_true_results,
+                                    linkedin_results, check_count, domain, time_spent_email, time_spent_brute,
+                                    time_spent_total, emailHunter_results, args, report_location, company, data_mine):
     info('Output action_output_wild_false_hunter: Start')
     linkedin_evidence_results = []
     email_evidence_results = []
@@ -559,23 +566,23 @@ def action_output_wild_false_hunter(brute_results_dict, sub_intrest, google_resu
     if emailHunter_results is not None:
         for email in emailHunter_results:
             email_results.append(email[0])
-            email_evidence_results.append((email[0],email[1]))
+            email_evidence_results.append((email[0], email[1]))
 
     for email, url in google_results:
         try:
             e1, e2 = email.split(',')
             if url not in email_seen:
                 email_seen.append(url)
-                email_evidence_results.append((str(e2).replace(' ',''),url))
-                email_evidence_results.append((str(e1).replace(' ',''),url))
-                email_results.append((str(e2).replace(' ','')))
-                email_results.append((str(e1).replace(' ','')))
+                email_evidence_results.append((str(e2).replace(' ', ''), url))
+                email_evidence_results.append((str(e1).replace(' ', ''), url))
+                email_results.append((str(e2).replace(' ', '')))
+                email_results.append((str(e1).replace(' ', '')))
 
         except ValueError:
             if url not in email_seen:
                 email_seen.append(url)
-                email_evidence_results.append((str(email).replace(' ',''),url))
-                email_results.append(str(email).replace(' ',''))
+                email_evidence_results.append((str(email).replace(' ', ''), url))
+                email_results.append(str(email).replace(' ', ''))
 
     for e, u in bing_true_results:
         email_results.append(e)
@@ -602,57 +609,56 @@ def action_output_wild_false_hunter(brute_results_dict, sub_intrest, google_resu
     pwned_results = action_pwned(f_emails)
     c_accounts = len(pwned_results)
 
-    print '\n\nEmail Addresses:\n'
+    print('\n\nEmail Addresses:\n')
     write_html(email_evidence_results, linkedin_evidence_results, pwned_results, report_location, company, data_mine)
     if f_emails:
 
         for email in f_emails:
-
-            print '\t' + str(email).replace("u'","").replace("'","").replace('[','').replace(']','')
+            print('\t' + str(email).replace("u'", "").replace("'", "").replace('[', '').replace(']', ''))
     else:
-        print '\tNo Data To Be Found'
+        print('\tNo Data To Be Found')
 
-    print '\nCompromised Accounts:\n'
+    print('\nCompromised Accounts:\n')
     if pwned_results:
         sorted_pwned = sorted(pwned_results)
         for account in sorted_pwned:
-            print 'Account: \t{}'.format(account[0])
-            print ' Domain: \t{}'.format(account[1])
-            print '   Date: \t{}\n'.format(account[3])
+            print('Account: \t{}'.format(account[0]))
+            print(' Domain: \t{}'.format(account[1]))
+            print('   Date: \t{}\n'.format(account[3]))
     else:
-        print '\tNo Data To Be Found'
+        print('\tNo Data To Be Found')
 
-    print '\nLinkedIn Results:\n'
+    print('\nLinkedIn Results:\n')
 
     sorted_person = sorted(person_seen)
     if sorted_person:
         for person in sorted_person:
-            print person
+            print(person)
     else:
-        print '\tNo Data To Be Found'
+        print('\tNo Data To Be Found')
 
     if data_mine is not None:
         user_names = data_mine[0]
         software_list = data_mine[1]
         download_count = data_mine[2]
-        download_list = data_mine[3]
+        # download_list = data_mine[3]
         username_count = len(user_names)
         software_count = len(software_list)
 
-        print '\nData Found In Document MetaData'
-        print '\nPotential Usernames:\n'
+        print('\nData Found In Document MetaData')
+        print('\nPotential Usernames:\n')
         if user_names:
             for user in user_names:
-                print '\t' + colored(user, 'red')
+                print('\t' + colored(user, 'red'))
         else:
-            print '\tNo Data To Be Found'
+            print('\tNo Data To Be Found')
 
-        print '\nSoftware And Versions Found:\n'
+        print('\nSoftware And Versions Found:\n')
         if software_list:
             for software in software_list:
-                print '\t' + colored(software, 'red')
+                print('\t' + colored(software, 'red'))
         else:
-            print '\tNo Data To Be Found'
+            print('\tNo Data To Be Found')
     else:
         user_names = []
         software_list = []
@@ -662,63 +668,64 @@ def action_output_wild_false_hunter(brute_results_dict, sub_intrest, google_resu
 
     sorted_dict = collections.OrderedDict(sorted(brute_results_dict.items()))
     bruted_count = len(sorted_dict)
-    print "\nBluto Results: \n"
+    print("\nBluto Results: \n")
     for item in sorted_dict:
         if item is not '*.' + domain:
             if item is not '@.' + domain:
-                if item in sub_intrest:
-                    print colored(item + "\t", 'red'), colored(sorted_dict[item], 'red')
+                if item in sub_interest:
+                    print(colored(item + "\t", 'red'), colored(sorted_dict[item], 'red'))
                 else:
-                    print item + "\t",sorted_dict[item]
+                    print(item + "\t", sorted_dict[item])
 
-    time_spent_email_f = str(datetime.timedelta(seconds=(time_spent_email))).split('.')[0]
-    time_spent_brute_f = str(datetime.timedelta(seconds=(time_spent_brute))).split('.')[0]
-    time_spent_total_f = str(datetime.timedelta(seconds=(time_spent_total))).split('.')[0]
+    time_spent_email_f = str(datetime.timedelta(seconds=time_spent_email)).split('.')[0]
+    time_spent_brute_f = str(datetime.timedelta(seconds=time_spent_brute)).split('.')[0]
+    time_spent_total_f = str(datetime.timedelta(seconds=time_spent_total)).split('.')[0]
 
-    print '\nHosts Identified: {}' .format(str(bruted_count))
-    print 'Potential Emails Found: {}' .format(str(email_count))
-    print 'Potential Staff Members Found: {}' .format(str(staff_count))
-    print 'Compromised Accounts: {}' .format(str(c_accounts))
-    print 'Potential Usernames Found: {}'.format(username_count)
-    print 'Potential Software Found: {}'.format(software_count)
-    print 'Documents Downloaded: {}'.format(download_count)
-    print "Email Enumeration:", time_spent_email_f
-    print "Requests executed:", str(check_count) + " in ", time_spent_brute_f
-    print "Total Time:", time_spent_total_f
+    print('\nHosts Identified: {}'.format(str(bruted_count)))
+    print('Potential Emails Found: {}'.format(str(email_count)))
+    print('Potential Staff Members Found: {}'.format(str(staff_count)))
+    print('Compromised Accounts: {}'.format(str(c_accounts)))
+    print('Potential Usernames Found: {}'.format(username_count))
+    print('Potential Software Found: {}'.format(software_count))
+    print('Documents Downloaded: {}'.format(download_count))
+    print("Email Enumeration:", time_spent_email_f)
+    print("Requests executed:", str(check_count) + " in ", time_spent_brute_f)
+    print("Total Time:", time_spent_total_f)
 
-    info('Hosts Identified: {}' .format(str(bruted_count)))
-    info("Email Enumeration: {}" .format(str(time_spent_email_f)))
-    info('Compromised Accounts: {}' .format(str(c_accounts)))
-    info('Potential Staff Members Found: {}' .format(str(staff_count)))
-    info('Potential Emails Found: {}' .format(str(email_count)))
-    info("Total Time:" .format(str(time_spent_total_f)))
+    info('Hosts Identified: {}'.format(str(bruted_count)))
+    info("Email Enumeration: {}".format(str(time_spent_email_f)))
+    info('Compromised Accounts: {}'.format(str(c_accounts)))
+    info('Potential Staff Members Found: {}'.format(str(staff_count)))
+    info('Potential Emails Found: {}'.format(str(email_count)))
+    info("Total Time:".format(str(time_spent_total_f)))
     info('Documents Downloaded: {}'.format(download_count))
     info('DNS No Wild Cards + Email Hunter Run completed')
     info('Output action_output_wild_false_hunter: Completed')
 
     domain_r = domain.split('.')
     docs = os.path.expanduser('~/Bluto/doc/{}/'.format(domain_r[0]))
-    answers = ['no','n','y','yes']
+    answers = ['no', 'n', 'y', 'yes']
     while True:
-        print colored("\nWould you like to keep all local data?\n(Local Logs, Downloded Documents, HTML Evidence Report)\n\nYes|No:", "red")
-        answer = raw_input("").lower()
+        print(colored("\nWould you like to keep all local data?\n"
+                      "(Local Logs, Downloaded Documents, HTML Evidence Report)\n\nYes|No:",
+                      "red"))
+        answer = input("").lower()
         if answer in answers:
             if answer == 'y' or answer == 'yes':
-                domain
-                print '\nThe documents are located here: {}'.format(docs)
-                print 'The logs are located here: {}.'.format(LOG_DIR)
-                print "\nAn evidence report has been written to {}\n".format(report_location)
+                print('\nThe documents are located here: {}'.format(docs))
+                print('The logs are located here: {}.'.format(LOG_DIR))
+                print("\nAn evidence report has been written to {}\n".format(report_location))
                 while True:
-                    answer = raw_input("Would you like to open this report now? ").lower()
+                    answer = input("Would you like to open this report now? ").lower()
                     if answer in answers:
                         if answer == 'y' or answer == 'yes':
-                            print '\nOpening {}' .format(report_location)
+                            print('\nOpening {}'.format(report_location))
                             webbrowser.open('file://' + str(report_location))
                             break
                         else:
                             break
                     else:
-                        print 'Your answer needs to be either yes|y|no|n rather than, {}' .format(answer)
+                        print('Your answer needs to be either yes|y|no|n rather than, {}'.format(answer))
                 break
             else:
                 shutil.rmtree(docs)
@@ -726,11 +733,17 @@ def action_output_wild_false_hunter(brute_results_dict, sub_intrest, google_resu
                 os.remove(report_location)
                 break
         else:
-            print '\tYour answer needs to be either yes|y|no|n rather than, {}' .format(answer)
+            print('\tYour answer needs to be either yes|y|no|n rather than, {}'.format(answer))
 
 
 def write_html(email_evidence_results, linkedin_evidence_results, pwned_results, report_location, company, data_mine):
     info('Started HTML Report')
+    download_count = None
+    username_count = None
+    software_count = None
+    user_names = None
+    software_list = None
+    download_list = None
     if data_mine is not None:
         user_names = data_mine[0]
         software_list = data_mine[1]
@@ -792,8 +805,7 @@ def write_html(email_evidence_results, linkedin_evidence_results, pwned_results,
     </body>
     </html>
     '''
-
-    emailDescription ='''
+    emailDescription = '''
 
         <H2>Email Evidence:</H2>
         <th>
@@ -801,14 +813,14 @@ def write_html(email_evidence_results, linkedin_evidence_results, pwned_results,
                 <p>
                  Email evidence includes the email address and the location it was found, this allows for potential remediation.
                  If corporate emails are to be utilised in the public domain, it is recommended that they are generic in nature and are not able to
-                 authenticate to any public corporate services such as VPN, or similare remote control services.
+                 authenticate to any public corporate services such as VPN, or similar remote control services.
 
                  This data can also be used in further attack vectors such as potential targets for Social Engineering and Phishing attacks.
                 </p>
             </div>
         </th>
     '''
-    metaDescription ='''
+    metaDescription = '''
 
             <H2>MetaData Evidence:</H2>
             <th>
@@ -825,34 +837,31 @@ def write_html(email_evidence_results, linkedin_evidence_results, pwned_results,
                 </div>
             </th>
         '''
-
-    linkedinDescription ='''
+    linkedinDescription = '''
 
             <H2>LinkedIn Evidence:</H2>
             <th>
                 <div>
                     <p>
                      Staff names, job roles and associations can be gathered from social media sites such as LinkedIn. This information can be used
-                     to attempt futher information gathering via vectors such as Social Engineering techniques, phone attacks, and phishing attacks. This data can also be used to try determine more
+                     to attempt further information gathering via vectors such as Social Engineering techniques, phone attacks, and phishing attacks. This data can also be used to try determine more
                      information such as potential email addresses.
                     </p>
                 </div>
             </th>
         '''
-
-    compromisedDescription ='''
+    compromisedDescription = '''
 
                 <H2>Compromised Account Evidence:</H2>
                 <th>
                     <div>
                         <p>
                          This data was made publicly available due to a breach, this means that these account passwords and any portals that are utilised by these accounts
-                         could be compromised. It is recommedned that all account passwords are modified and made to adhere to company policy.
+                         could be compromised. It is recommended that all account passwords are modified and made to adhere to company policy.
                         </p>
                     </div>
                 </th>
             '''
-
     try:
         with open(report_location, 'w') as myFile:
             myFile.write(header)
@@ -959,7 +968,7 @@ def write_html(email_evidence_results, linkedin_evidence_results, pwned_results,
             myFile.write('</html>')
             myFile.close()
             info('Completed HTML Report')
-    except IOError,e:
+    except IOError:
         info('IOError', exc_info=True)
     except Exception:
-        info('An Unhandled Exception Occured', exc_info=True)
+        info('An Unhandled Exception Occurred', exc_info=True)

@@ -13,17 +13,17 @@ Give us a vote: https://n0where.net/dns-analysis-tool-bluto/
 Bluto has gone through a large code base change and various feature additions have been added since its first day on the job. Now that RandomStorm has been consumed and no longer exists, I felt it time to move the repo to a new location. So from this git push onwards Bluto will live here. I hope you enjoy the new Bluto.
 
 
-The target domain is queried for MX and NS records. Sub-domains are passively gathered via NetCraft. The target domain NS records are each queried for potential Zone Transfers. If none of them gives up their spinach, Bluto will attempt to identify if SubDomain Wild Cards are being used. If they are not Bluto will brute force subdomains using parallel sub processing on the top 20000 of the 'The Alexa Top 1 Million subdomains' If Wild Cards are in place, Bluto will still Brute Force SubDomains but using a different technique which takes roughly 4 x longer. NetCraft results are then presented individually and are then compared to the brute force results, any duplications are removed and particularly interesting results are highlighted. 
+The target domain is queried for MX and NS records. Subdomains are passively gathered via NetCraft. The target domain NS records are each queried for potential Zone Transfers. If none of them gives up their spinach, Bluto will attempt to identify if SubDomain Wild Cards are being used. If they are not Bluto will brute force subdomains using parallel sub processing on the top 20000 of the 'The Alexa Top 1 Million subdomains' If Wild Cards are in place, Bluto will still Brute Force SubDomains but using a different technique which takes roughly 4 x longer. NetCraft results are then presented individually and are then compared to the brute force results, any duplications are removed and particularly interesting results are highlighted. 
 
-Bluto now does email address enumeration based on the target domain, currently using Bing and Google search engines plus gathering data from the Email Hunter service and LinkedIn. https://haveibeenpwned.com/ is then used to identify if any email addresses have been compromised. Previously Bluto produced a 'Evidence Report' on the screen, this has now been moved off screen and into an HTML report.
+Bluto now does email address enumeration based on the target domain, currently using Bing and Google search engines plus gathering data from the Email Hunter service and LinkedIn. https://haveibeenpwned.com/ is then used to identify if any email addresses have been compromised. Previously Bluto produced a 'Evidence Report' on the screen, this has now been moved off-screen and into an HTML report.
 
-Search engine queries are configured in such a way to use a random `User Agent:` on each request and does a country look up to select the fastest Google server in relation to your egress address. Each request closes the connection in an attempt to further avoid captchas, however exsesive lookups will result in captchas (Bluto will warn you if any are identified). 
+Search engine queries are configured in such a way to use a random `User Agent:` on each request and does a country look-up to select the fastest Google server in relation to your egress address. Each request closes the connection in an attempt to further avoid captcha, however excessive lookups will result in captcha (Bluto will warn you if any are identified). 
          
 Bluto requires various other dependencies. So to make things as easy as possible, `pip` is used for the installation. This does mean you will need to have pip installed prior to attempting the Bluto install.
 
 Bluto now takes command line arguments at launch, the new options are as follows;
 
-	-e		This uses a very large subdomain list for bruting.
+	-e		This uses a very large subdomain list for Brute forcing.
 	-api	You can supply your email hunter api key here to gather a considerably larger amount of email addresses.
 	-d		Used to specify the target domain on the commandline.
 	-t		Used to set a timeout value in seconds. Default is 10
@@ -80,6 +80,9 @@ Change/Feature Requests
 
 Changelog
 ====
+* Version __3.0.1__ (__25/08/2022__):
+  * Update to python3
+
 * Version __2.4.7__ (__20/07/2018__):
   * GeoIP lookup refactor
   
@@ -95,7 +98,7 @@ Changelog
   * Target Domain Parsed As Argument
   
 * Version __2.0.1__ (__22/07/2016__):
-  * Compromised Account Data Prensented In Terminal And HTML Report
+  * Compromised Account Data Presented In Terminal And HTML Report
 
 * Version __2.0.0__ (__19/07/2016__):
   * Pushed Live 2.0

@@ -1,7 +1,7 @@
+2to3_3.txt
 LICENSE.txt
 MANIFEST.in
 README.md
-requirements.txt
 setup.py
 Bluto/bluto
 Bluto.egg-info/PKG-INFO
