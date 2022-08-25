@@ -37,16 +37,16 @@ import dns.zone
 from docopt import docopt
 from termcolor import colored
 
-from modules.bluto_logging import info
-from modules.data_mine import doc_start
-from modules.general import action_country_id, action_whois, action_bluto_use, check_dom
-from modules.get_dns import action_brute_start, action_wild_cards, action_zone_transfer, get_dns_details, \
+from .modules.bluto_logging import info
+from .modules.data_mine import doc_start
+from .modules.general import action_country_id, action_whois, action_bluto_use, check_dom
+from .modules.get_dns import action_brute_start, action_wild_cards, action_zone_transfer, get_dns_details, \
     action_brute_wild, set_resolver
-from modules.get_file import get_subs, get_sub_interest, get_line_count, get_user_agents
-from modules.output import action_output_vuln_zone, action_output_wild_false, action_output_wild_false_hunter, \
+from .modules.get_file import get_subs, get_sub_interest, get_line_count, get_user_agents
+from .modules.output import action_output_vuln_zone, action_output_wild_false, action_output_wild_false_hunter, \
     action_output_vuln_zone_hunter
-from modules.search import action_bing_true, action_google, action_linkedin, action_netcraft, action_emailHunter
-from modules.update import updateCheck
+from .modules.search import action_bing_true, action_google, action_linkedin, action_netcraft, action_emailHunter
+from .modules.update import updateCheck
 
 SITES = site.getsitepackages()
 path = ''
