@@ -16,6 +16,7 @@ from .bluto_logging import info, INFO_LOG_FILE
 
 targets = []
 
+
 def set_resolver(timeout_value):
     myResolver = dns.resolver.Resolver()
     myResolver.timeout = timeout_value
@@ -100,8 +101,10 @@ def action_wild_cards(domain, myResolver):
 def action_brute(subdomain):
     global myResolverG
     try:
+        print(f'Testing subdomain {subdomain}')
         myAnswers = myResolverG.query(subdomain)
         for data in myAnswers:
+            print(f'{subdomain} {str(data)}')
             targets.append(f'{subdomain} {str(data)}')
     except (dns.resolver.NoNameservers, dns.resolver.NXDOMAIN, dns.resolver.NoAnswer, dns.exception.SyntaxError):
         pass

@@ -4,8 +4,6 @@
 import collections
 import datetime
 import os
-import shutil
-import webbrowser
 
 from termcolor import colored
 
@@ -161,31 +159,31 @@ def action_output_vuln_zone(google_results, bing_results, linkedin_results, time
     docs = os.path.expanduser('~/Bluto/doc/{}/'.format(domain_r[0]))
     # answers = ['no', 'n', 'y', 'yes']
     # while True:
-        # answer = input(
-        #     "\nWould you like to keep all local data?\n(Local Logs, Downloaded Documents, HTML Evidence Report)"
-        #     "\n\nYes|No:").lower()
+    # answer = input(
+    #     "\nWould you like to keep all local data?\n(Local Logs, Downloaded Documents, HTML Evidence Report)"
+    #     "\n\nYes|No:").lower()
     # if answer in answers:
     #     if answer == 'y' or answer == 'yes':
     print(f'\nThe documents are located here: {docs}')
     print(f'The logs are located here: {LOG_DIR}.')
     print(f"\nAn evidence report has been written to {report_location}\n")
     # while True:
-        # answer = input("Would you like to open this report now? ").lower()
-        # if answer in answers:
-        #     if answer == 'y' or answer == 'yes':
-        #         print('\nOpening {}'.format(report_location))
-        #         webbrowser.open('file://' + str(report_location))
-        #     break
-        # else:
-        #     print('Your answer needs to be either yes|y|no|n rather than, {}'.format(answer))
-            # break
-        # else:
-        #     shutil.rmtree(docs)
-        #     shutil.rmtree(LOG_DIR)
-        #     os.remove(report_location)
-        #     break
-        # else:
-        #     print('\tYour answer needs to be either yes|y|no|n rather than, {}'.format(answer))
+    # answer = input("Would you like to open this report now? ").lower()
+    # if answer in answers:
+    #     if answer == 'y' or answer == 'yes':
+    #         print('\nOpening {}'.format(report_location))
+    #         webbrowser.open('file://' + str(report_location))
+    #     break
+    # else:
+    #     print('Your answer needs to be either yes|y|no|n rather than, {}'.format(answer))
+    # break
+    # else:
+    #     shutil.rmtree(docs)
+    #     shutil.rmtree(LOG_DIR)
+    #     os.remove(report_location)
+    #     break
+    # else:
+    #     print('\tYour answer needs to be either yes|y|no|n rather than, {}'.format(answer))
 
 
 def action_output_vuln_zone_hunter(google_results, bing_results, linkedin_results, time_spent_email, time_spent_total,
@@ -351,25 +349,25 @@ def action_output_vuln_zone_hunter(google_results, bing_results, linkedin_result
     print('\nThe documents are located here: {}'.format(docs))
     print('The logs are located here: {}.'.format(LOG_DIR))
     print("\nAn evidence report has been written to {}\n".format(report_location))
-                # while True:
-                #     answer = input("Would you like to open this report now? ").lower()
-                #     if answer in answers:
-                #         if answer == 'y' or answer == 'yes':
-                #             print('\nOpening {}'.format(report_location))
-                #             webbrowser.open('file://' + str(report_location))
-                            # break
-        #                 else:
-        #                     break
-        #             else:
-        #                 print('Your answer needs to be either yes|y|no|n rather than, {}'.format(answer))
-        #         break
-        #     else:
-        #         shutil.rmtree(docs)
-        #         shutil.rmtree(LOG_DIR)
-        #         os.remove(report_location)
-        #         break
-        # else:
-        #     print('\tYour answer needs to be either yes|y|no|n rather than, {}'.format(answer))
+    # while True:
+    #     answer = input("Would you like to open this report now? ").lower()
+    #     if answer in answers:
+    #         if answer == 'y' or answer == 'yes':
+    #             print('\nOpening {}'.format(report_location))
+    #             webbrowser.open('file://' + str(report_location))
+    # break
+    #                 else:
+    #                     break
+    #             else:
+    #                 print('Your answer needs to be either yes|y|no|n rather than, {}'.format(answer))
+    #         break
+    #     else:
+    #         shutil.rmtree(docs)
+    #         shutil.rmtree(LOG_DIR)
+    #         os.remove(report_location)
+    #         break
+    # else:
+    #     print('\tYour answer needs to be either yes|y|no|n rather than, {}'.format(answer))
 
 
 def action_output_wild_false(brute_results_dict, sub_interest, google_results, bing_true_results, linkedin_results,
@@ -531,25 +529,25 @@ def action_output_wild_false(brute_results_dict, sub_interest, google_results, b
     print('\nThe documents are located here: {}'.format(docs))
     print('The logs are located here: {}.'.format(LOG_DIR))
     print("\nAn evidence report has been written to {}\n".format(report_location))
-                # while True:
-                #     answer = input("Would you like to open this report now? ").lower()
-                #     if answer in answers:
-                #         if answer == 'y' or answer == 'yes':
-                #             print('\nOpening {}'.format(report_location))
-                #             webbrowser.open('file://' + str(report_location))
-                #             break
-                #         else:
-                #             break
-                #     else:
-                #         print('Your answer needs to be either yes|y|no|n rather than, {}'.format(answer))
-                # break
-        #     else:
-        #         shutil.rmtree(docs)
-        #         shutil.rmtree(LOG_DIR)
-        #         os.remove(report_location)
-        #         break
-        # else:
-        #     print('\tYour answer needs to be either yes|y|no|n rather than, {}'.format(answer))
+    # while True:
+    #     answer = input("Would you like to open this report now? ").lower()
+    #     if answer in answers:
+    #         if answer == 'y' or answer == 'yes':
+    #             print('\nOpening {}'.format(report_location))
+    #             webbrowser.open('file://' + str(report_location))
+    #             break
+    #         else:
+    #             break
+    #     else:
+    #         print('Your answer needs to be either yes|y|no|n rather than, {}'.format(answer))
+    # break
+    #     else:
+    #         shutil.rmtree(docs)
+    #         shutil.rmtree(LOG_DIR)
+    #         os.remove(report_location)
+    #         break
+    # else:
+    #     print('\tYour answer needs to be either yes|y|no|n rather than, {}'.format(answer))
 
 
 def action_output_wild_false_hunter(brute_results_dict, sub_interest, google_results, bing_true_results,
@@ -717,25 +715,25 @@ def action_output_wild_false_hunter(brute_results_dict, sub_interest, google_res
     print('\nThe documents are located here: {}'.format(docs))
     print('The logs are located here: {}.'.format(LOG_DIR))
     print("\nAn evidence report has been written to {}\n".format(report_location))
-        #         while True:
-        #             answer = input("Would you like to open this report now? ").lower()
-        #             if answer in answers:
-        #                 if answer == 'y' or answer == 'yes':
-        #                     print('\nOpening {}'.format(report_location))
-        #                     webbrowser.open('file://' + str(report_location))
-        #                     break
-        #                 else:
-        #                     break
-        #             else:
-        #                 print('Your answer needs to be either yes|y|no|n rather than, {}'.format(answer))
-        #         break
-        #     else:
-        #         shutil.rmtree(docs)
-        #         shutil.rmtree(LOG_DIR)
-        #         os.remove(report_location)
-        #         break
-        # else:
-        #     print('\tYour answer needs to be either yes|y|no|n rather than, {}'.format(answer))
+    #         while True:
+    #             answer = input("Would you like to open this report now? ").lower()
+    #             if answer in answers:
+    #                 if answer == 'y' or answer == 'yes':
+    #                     print('\nOpening {}'.format(report_location))
+    #                     webbrowser.open('file://' + str(report_location))
+    #                     break
+    #                 else:
+    #                     break
+    #             else:
+    #                 print('Your answer needs to be either yes|y|no|n rather than, {}'.format(answer))
+    #         break
+    #     else:
+    #         shutil.rmtree(docs)
+    #         shutil.rmtree(LOG_DIR)
+    #         os.remove(report_location)
+    #         break
+    # else:
+    #     print('\tYour answer needs to be either yes|y|no|n rather than, {}'.format(answer))
 
 
 def write_html(email_evidence_results, linkedin_evidence_results, pwned_results, report_location, company, data_mine):
