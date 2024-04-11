@@ -291,7 +291,7 @@ def action_linkedin(domain, userCountry, q, company, user_agents, prox):
     entries_tuples = []
     seen = set()
     results = []
-    search_for = 'site:linkedin.com/in ' + '"' + company + '"'
+    search_for = f'site:linkedin.com/in {company}'  # + '"' + company + '"'
     headers = {"Connection": "close", "User-Agent": random.choice(uas),
                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
                'Accept-Language': 'en-US,en;q=0.5', 'Accept-Encoding': 'gzip, deflate'}

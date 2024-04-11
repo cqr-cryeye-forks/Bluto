@@ -17,6 +17,16 @@ from .bluto_logging import info, INFO_LOG_FILE
 targets = []
 
 
+def data_getdns1():
+    global data_Name_Server
+    return data_Name_Server
+
+
+def data_getdns2():
+    global data_Mail_Server
+    return data_Mail_Server
+
+
 def set_resolver(timeout_value):
     myResolver = dns.resolver.Resolver()
     myResolver.timeout = timeout_value
@@ -33,6 +43,8 @@ def get_dns_details(domain, myResolver):
     mx_list = []
     try:
         print("\nName Server:\n")
+        global data_Name_Server
+        data_Name_Server = []
         myAnswers = myResolver.query(domain, "NS")
         for data in myAnswers.rrset:
             data1 = str(data)
@@ -44,6 +56,7 @@ def get_dns_details(domain, myResolver):
             ns_list.sort()
         for i in ns_list:
             print(colored(i, 'green'))
+            data_Name_Server.append(i)
     except dns.resolver.NoNameservers:
         info('\tNo Name Servers\nConfirm The Domain Name Is Correct.' + INFO_LOG_FILE, exc_info=True)
 
@@ -62,6 +75,8 @@ def get_dns_details(domain, myResolver):
 
     try:
         print("\nMail Server:\n")
+        global data_Mail_Server
+        data_Mail_Server = []
         myAnswers = myResolver.query(domain, "MX")
         for data in myAnswers:
             data1 = str(data)
@@ -72,6 +87,7 @@ def get_dns_details(domain, myResolver):
             mx_list.sort()
         for i in mx_list:
             print(colored(i, 'green'))
+            data_Mail_Server.append(i)
     except dns.resolver.NoAnswer:
         print("\tNo Mail Servers")
     except Exception:
@@ -161,6 +177,8 @@ def action_zone_transfer(zn_list, domain):
     vulnerable_listT = []
     vulnerable_listF = []
     dump_list = []
+    global data_Attempting_Zone_Transfers
+    data_Attempting_Zone_Transfers = []
     for ns in zn_list:
         try:
             z = dns.zone.from_xfr(dns.query.xfr(ns, domain, timeout=3, lifetime=5))
@@ -177,6 +195,7 @@ def action_zone_transfer(zn_list, domain):
         print("\nNot Vulnerable:\n")
         for ns in vulnerable_listF:
             print(colored(ns, 'green'))
+            data_Attempting_Zone_Transfers.append(ns)
     if vulnerable_listT:
         _extracted_from_action_zone_transfer_36(vulnerable_listT, domain, dump_list)
     info('Completed Attempting Zone Transfers')

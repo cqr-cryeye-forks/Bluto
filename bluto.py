@@ -11,11 +11,12 @@ Author:  Darryl Lane
 Twitter: @darryllane101
 
 Usage:
-    bluto [--domain=<domain>] [-e] [-u] [--timeout=<timeout>] [--api=<key>]
+    bluto [--domain=<domain>] [-e] [-u] [--timeout=<timeout>] [--api=<key>] [--output=<output>]
     bluto -h | --help
     bluto --version
 
 Options:
+    bluto --output      Save in output file
     bluto -e           Large Subdomain list used for Brute forcing
     bluto -u           Check for latest version of Bluto
     bluto --timeout    Set DNS timeout in seconds
@@ -26,12 +27,29 @@ Options:
 
 """
 
+
+# Google Search Started
+# Not Vulnerable
+# None of the Name Servers are vulnerable to Zone Transfers
+# Wild Cards Are Not In Place
+# INFO:MyLogger:Identifying Country
+# INFO:MyLogger:Country Identified: ukraine
+# Gathering Data From Google, Bing And LinkedIn
+# INFO:MyLogger:Data Folder Created /home/user-q/Bluto/doc/dima/
+# Brute Forcing Sub-Domains
+# INFO:MyLogger:An Unhandled Exception Has Occurred, Please Check The Log For Details /home/user-q/Bluto/log/bluto-info.log
+
+
+import argparse
+import json
 import os
+import pathlib
 import queue
 import site
 import sys
 import threading
 import time
+from typing import Final
 
 import dns.zone
 from docopt import docopt
@@ -48,38 +66,33 @@ from Bluto.modules.output import action_output_vuln_zone, action_output_wild_fal
 from Bluto.modules.search import action_bing_true, action_google, action_linkedin, action_netcraft, action_emailHunter
 from Bluto.modules.update import updateCheck
 
-SITES = site.getsitepackages()
-path = ''
-for item in SITES:
-    if os.path.exists(item + "/Bluto/modules/__init__.py"):
-        path = item
-        sys.path.append(path + '/Bluto/')
+MAIN_DIR: Final[pathlib.Path] = pathlib.Path(__file__).parent
 
-FILENAME_1 = path + "/Bluto/doc/subdomains-top1mil-20000.txt"
-FILENAME_2 = path + "/Bluto/doc/sub_interest.txt"
-USERAGENT_F = path + "/Bluto/doc/user_agents.txt"
-COUNTRIES_FILE = path + "/Bluto/doc/countries.txt"
+FILENAME_1: str = MAIN_DIR / "Bluto/doc/subdomains-top1mil-20000.txt"
+FILENAME_2: str = MAIN_DIR / "Bluto/doc/sub_interest.txt"
+USERAGENT_F: str = MAIN_DIR / "Bluto/doc/user_agents.txt"
+COUNTRIES_FILE: str = MAIN_DIR / "Bluto/doc/countries.txt"
 INFO_LOG_FILE = os.path.expanduser('~/Bluto/log/bluto-info.log')
 
 version = '3.0.3'
 
 title = """
- BBBBBBBBBBBBBBBBB  lllllll                       tttt
- B::::::::::::::::B l:::::l                     ttt:::t
- B::::::BBBBBB:::::Bl:::::l                     t:::::t
- BB:::::B     B:::::l:::::l{0}              t:::::t
-   B::::B     B:::::Bl::::luuuuuu    uuuuuttttttt:::::ttttttt      ooooooooooo
-   B::::B     B:::::Bl::::lu::::u    u::::t:::::::::::::::::t    oo:::::::::::oo
-   B::::BBBBBB:::::B l::::lu::::u    u::::t:::::::::::::::::t   o:::::::::::::::o
-   B:::::::::::::BB  l::::lu::::u    u::::tttttt:::::::tttttt   o:::::ooooo:::::o
-   B::::BBBBBB:::::B l::::lu::::u    u::::u     t:::::t         o::::o     o::::o
-   B::::B     B:::::Bl::::lu::::u    u::::u     t:::::t         o::::o     o::::o
-   B::::B     B:::::Bl::::lu::::u    u::::u     t:::::t         o::::o     o::::o
-   B::::B     B:::::Bl::::lu:::::uuuu:::::u     t:::::t    ttttto::::o     o::::o
-BB:::::BBBBBB::::::l::::::u:::::::::::::::uu   t::::::tttt:::::o:::::ooooo:::::o
-B:::::::::::::::::Bl::::::lu:::::::::::::::u   tt::::::::::::::o:::::::::::::::o
-B::::::::::::::::B l::::::l uu::::::::uu:::u     tt:::::::::::ttoo:::::::::::oo
-BBBBBBBBBBBBBBBBB  llllllll   uuuuuuuu  uuuu       ttttttttttt    ooooooooooo
+ BBBBBBBBBBBBBBBBB   lllllll                            tttt
+ B::::::::::::::::B  l:::::l                          ttt:::t
+ B::::::BBBBBB:::::B l:::::l                          t:::::t
+ BB:::::B     B::::: l:::::l {0}                   t:::::t
+   B::::B     B:::::B l::::l uuuuuu    uuuuu ttttttt:::::ttttttt       oooooooooooo
+   B::::B     B:::::B l::::l u::::u    u:::: t:::::::::::::::::t      oo:::::::::::oo
+   B::::BBBBBB:::::B  l::::l u::::u    u:::: t:::::::::::::::::t     o:::::::::::::::o
+   B:::::::::::::BB   l::::l u::::u    u:::: tttttt:::::::tttttt     o:::::ooooo:::::o
+   B::::BBBBBB:::::B  l::::l u::::u    u::::u      t:::::t           o::::o     o::::o
+   B::::B     B:::::B l::::l u::::u    u::::u      t:::::t           o::::o     o::::o
+   B::::B     B:::::B l::::l u::::u    u::::u      t:::::t           o::::o     o::::o
+   B::::B     B:::::B l::::l u:::::uuuu:::::u      t:::::t    tttttt o::::o     o::::o
+BB:::::BBBBBB:::::: l::::::l u:::::::::::::::uu    t::::::tttt:::::t o:::::ooooo:::::o
+B:::::::::::::::::B l::::::l u:::::::::::::::uu    tt::::::::::::::t o:::::::::::::::o
+B::::::::::::::::B  l::::::l  uu::::::::uu:::u      tt:::::::::::ttt  oo:::::::::::oo
+BBBBBBBBBBBBBBBBB   llllllll    uuuuuuuu  uuuu        ttttttttttt      ooooooooooo
 """.format(colored("v" + version, 'red'))
 
 desc = """  {2} | {3} | {4} | {9}
@@ -100,7 +113,7 @@ prox = False
 if __name__ == "__main__":
     info('\nBluto Started')
     args = docopt(__doc__, version=version)
-    print(title)
+    # print(title)
     print(desc)
     q4 = queue.Queue()
     # Check Arguments
@@ -120,7 +133,7 @@ if __name__ == "__main__":
 
         if args['-e']:
             info('-e Argument Used')
-            FILENAME_1 = path + "/Bluto/doc/lots-of-spinach.txt"
+            FILENAME_1: str = MAIN_DIR / "Bluto/doc/lots-of-spinach.txt"
 
         if args['--api']:
             api = args['--api']
@@ -128,10 +141,8 @@ if __name__ == "__main__":
         else:
             api = False
 
-        if args['--domain']:
-            domain = args['--domain']
-        else:
-            domain = input("Target Domain: ")
+        domain = args['--domain']
+        output = args['--output']
 
         user_agents = get_user_agents(USERAGENT_F)
         info('Domain Identified: ' + str(domain))
@@ -356,3 +367,9 @@ if __name__ == "__main__":
         sys.exit()
     except Exception as e:
         print(e)
+
+    from Bluto.modules.output import all_data
+    output_json: str = MAIN_DIR / output
+
+    with open(output_json, "w") as jf:
+        json.dump(all_data(), jf, indent=2)
