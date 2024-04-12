@@ -144,6 +144,14 @@ if __name__ == "__main__":
         domain = args['--domain']
         output = args['--output']
 
+        # ToDo: You can test it here
+        # from Bluto.modules.output import all_data
+        #
+        # output_json: str = MAIN_DIR / output
+        #
+        # with open(output_json, "w") as jf:
+        #     json.dump(all_data(), jf, indent=2)
+
         user_agents = get_user_agents(USERAGENT_F)
         info('Domain Identified: ' + str(domain))
         domain_r = domain.split('.')

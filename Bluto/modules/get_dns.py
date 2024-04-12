@@ -3,9 +3,11 @@
 # -*- coding: utf-8 -*-
 
 import random
+import re
 import socket
 import string
 import sys
+import time
 import traceback
 from multiprocessing.dummy import Pool as ThreadPool
 
@@ -44,7 +46,7 @@ def get_dns_details(domain, myResolver):
     try:
         print("\nName Server:\n")
         global data_Name_Server
-        data_Name_Server = []
+        list_Name_Server = []
         myAnswers = myResolver.query(domain, "NS")
         for data in myAnswers.rrset:
             data1 = str(data)
@@ -56,7 +58,20 @@ def get_dns_details(domain, myResolver):
             ns_list.sort()
         for i in ns_list:
             print(colored(i, 'green'))
-            data_Name_Server.append(i)
+            list_Name_Server.append(i)
+            domains = []
+            ips = []
+            data_Name_Server = []
+            for item in list_Name_Server:
+                domain, ip = re.split(r"\t", item)
+                domains.append(domain)
+                ips.append(ip)
+                domain_ip = {
+                    "domain": domain,
+                    "ip": ip,
+                }
+                data_Name_Server.append(domain_ip)
+            print("\n\n", data_Name_Server)
     except dns.resolver.NoNameservers:
         info('\tNo Name Servers\nConfirm The Domain Name Is Correct.' + INFO_LOG_FILE, exc_info=True)
 

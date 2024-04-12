@@ -65,7 +65,7 @@ def action_output_vuln_zone(google_results, bing_results, linkedin_results, time
     c_accounts = len(pwned_results)
 
     print('\n\nEmail Addresses:\n')
-    print("ALL RESULT 1\n", email_evidence_results, "\n", linkedin_evidence_results, "\n", pwned_results, "\n", report_location, "\n", company, "\n", data_mine)
+    print(["ALL RESULT 1\n", email_evidence_results, "\n", linkedin_evidence_results, "\n", pwned_results, "\n", report_location, "\n", company, "\n", data_mine])
     write_html(email_evidence_results, linkedin_evidence_results, pwned_results, report_location, company, data_mine)
     write_json(email_evidence_results, linkedin_evidence_results, pwned_results, data_mine)
     if f_emails:
@@ -250,7 +250,7 @@ def action_output_vuln_zone_hunter(google_results, bing_results, linkedin_result
     c_accounts = len(pwned_results)
 
     print('\n\nEmail Addresses:\n')
-    print("ALL RESULT 2\n", email_evidence_results, "\n", linkedin_evidence_results, "\n", pwned_results, "\n", report_location, "\n", company, "\n", data_mine)
+    print(["ALL RESULT 2\n", email_evidence_results, "\n", linkedin_evidence_results, "\n", pwned_results, "\n", report_location, "\n", company, "\n", data_mine])
     write_html(email_evidence_results, linkedin_evidence_results, pwned_results, report_location, company, data_mine)
     write_json(email_evidence_results, linkedin_evidence_results, pwned_results, data_mine)
     if f_emails:
@@ -430,7 +430,7 @@ def action_output_wild_false(brute_results_dict, sub_interest, google_results, b
     c_accounts = len(pwned_results)
 
     print('\n\nEmail Addresses:\n')
-    print("ALL RESULT 3\n", email_evidence_results, "\n", linkedin_evidence_results, "\n", pwned_results, "\n", report_location, "\n", company, "\n", data_mine)
+    print(["ALL RESULT 3\n", email_evidence_results, "\n", linkedin_evidence_results, "\n", pwned_results, "\n", report_location, "\n", company, "\n", data_mine])
 
     write_html(email_evidence_results, linkedin_evidence_results, pwned_results, report_location, company, data_mine)
     write_json(email_evidence_results, linkedin_evidence_results, pwned_results, data_mine)
@@ -618,7 +618,7 @@ def action_output_wild_false_hunter(brute_results_dict, sub_interest, google_res
     c_accounts = len(pwned_results)
 
     print('\n\nEmail Addresses:\n')
-    print("ALL RESULT 4\n", email_evidence_results, "\n", linkedin_evidence_results, "\n", pwned_results, "\n", report_location, "\n", company, "\n", data_mine)
+    print(["ALL RESULT 4\n", email_evidence_results, "\n", linkedin_evidence_results, "\n", pwned_results, "\n", report_location, "\n", company, "\n", data_mine])
 
     write_html(email_evidence_results, linkedin_evidence_results, pwned_results, report_location, company, data_mine)
     write_json(email_evidence_results, linkedin_evidence_results, pwned_results, data_mine)
@@ -748,11 +748,6 @@ def action_output_wild_false_hunter(brute_results_dict, sub_interest, google_res
     #     print('\tYour answer needs to be either yes|y|no|n rather than, {}'.format(answer))
 
 
-def all_data():
-    global data
-    return data
-
-
 def write_json(email_evidence_results, linkedin_evidence_results, pwned_results, data_mine):
     from Bluto.modules.get_dns import data_getdns1, data_getdns2
     global data
@@ -766,9 +761,6 @@ def write_json(email_evidence_results, linkedin_evidence_results, pwned_results,
         user_names = data_mine[0]
         software_list = data_mine[1]
         download_count = data_mine[2]
-
-
-    data = {}
 
     user_names_list = []
     emails = []
@@ -824,18 +816,30 @@ def write_json(email_evidence_results, linkedin_evidence_results, pwned_results,
             }
             software_names_list.append(data_software)
     data.update(data_getdns1())
+    print("DATA 1\n", data, "\n\n")
     data.update(data_getdns2())
+    print("DATA 2\n", data, "\n\n")
     data.update({"emails": emails})
+    print("DATA 3\n", data, "\n\n")
     data.update({"linkedin": linkedin})
+    print("DATA 4\n", data, "\n\n")
     data.update({"pwned_results_list": pwned_results_list})
+    print("DATA 5\n", data, "\n\n")
     data.update({"list_mine_count": list_mine_count})
+    print("DATA 6\n", data, "\n\n")
     data.update({"user_names_list": user_names_list})
+    print("DATA 7\n", data, "\n\n")
     data.update({"software_names_list": software_names_list})
+    print("DATA 8\n", data, "\n\n")
     if data == {}:
         data = {"Error": "Nothing found"}
     elif data == "ERROR":
         data = {"Error": "Domain Not Valid, Check You Have Entered It Correctly"}
 
+
+def all_data():
+    global data
+    return data
 
 def write_html(email_evidence_results, linkedin_evidence_results, pwned_results, report_location, company, data_mine):
     info('Started HTML Report')
