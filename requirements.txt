@@ -1,12 +1,12 @@
-docopt~=0.6.2
-dnspython~=2.2.1
-termcolor~=1.1.0
-BeautifulSoup4~=4.11.1
-requests[security]~=2.28.1
-lxml
-pdfminer~=20191125
-olefile~=0.46
+docopt==0.6.2
+dnspython==2.2.1
+termcolor==1.1.0
+BeautifulSoup4==4.11.1
+requests[security]==2.28.1
+lxml==5.2.1
+pdfminer==20191125
+olefile==0.46
 setuptools==65.3.0
-
-urllib3~=1.26.12
-python-whois@git+https://github.com/DannyCork/python-whois
+urllib3==1.26.12
+whois==1.20240129.2
+# python-whois@git+https://github.com/DannyCork/python-whois
