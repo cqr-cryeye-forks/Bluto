@@ -74,6 +74,10 @@ USERAGENT_F: str = MAIN_DIR / "Bluto/doc/user_agents.txt"
 COUNTRIES_FILE: str = MAIN_DIR / "Bluto/doc/countries.txt"
 INFO_LOG_FILE = os.path.expanduser('~/Bluto/log/bluto-info.log')
 
+result1 = None
+result2 = None
+result3 = None
+
 version = '3.0.3'
 
 title = """
@@ -143,14 +147,6 @@ if __name__ == "__main__":
 
         domain = args['--domain']
         output = args['--output']
-
-        # ToDo: You can test it here
-        # from Bluto.modules.output import all_data
-        #
-        # output_json: str = MAIN_DIR / output
-        #
-        # with open(output_json, "w") as jf:
-        #     json.dump(all_data(), jf, indent=2)
 
         user_agents = get_user_agents(USERAGENT_F)
         info('Domain Identified: ' + str(domain))
@@ -234,12 +230,12 @@ if __name__ == "__main__":
                 # Outputting data
                 if api:
                     emailHunter_results = q4.get()
-                    action_output_wild_false_hunter(brute_results_dict, sub_interest, google_true_results,
+                    result1 = action_output_wild_false_hunter(brute_results_dict, sub_interest, google_true_results,
                                                     bing_true_results, linkedin_results, check_count, domain,
                                                     time_spent_email, time_spent_brute, time_spent_total,
                                                     emailHunter_results, args, report_location, company, data_mine)
                 else:
-                    action_output_wild_false(brute_results_dict, sub_interest, google_true_results, bing_true_results,
+                    result1 = action_output_wild_false(brute_results_dict, sub_interest, google_true_results, bing_true_results,
                                              linkedin_results, check_count, domain, time_spent_email, time_spent_brute,
                                              time_spent_total, report_location, company, data_mine)
             # WildCards False
@@ -305,13 +301,13 @@ if __name__ == "__main__":
                 brute_results_dict = dict((x.split(' ') for x in domains))
                 if api:
                     emailHunter_results = q4.get()
-                    action_output_wild_false_hunter(brute_results_dict, sub_interest, google_true_results,
+                    result2 = action_output_wild_false_hunter(brute_results_dict, sub_interest, google_true_results,
                                                     bing_true_results, linkedin_results, check_count, domain,
                                                     time_spent_email, time_spent_brute, time_spent_total,
                                                     emailHunter_results, args, report_location, company, data_mine)
                 # Outputting data
                 else:
-                    action_output_wild_false(brute_results_dict, sub_interest, google_true_results, bing_true_results,
+                    result2 = action_output_wild_false(brute_results_dict, sub_interest, google_true_results, bing_true_results,
                                              linkedin_results, check_count, domain, time_spent_email, time_spent_brute,
                                              time_spent_total, report_location, company, data_mine)
         else:
@@ -360,11 +356,11 @@ if __name__ == "__main__":
             # Outputting data
             if api:
                 emailHunter_results = q4.get()
-                action_output_vuln_zone_hunter(google_results, bing_results, linkedin_results, time_spent_email,
+                result3 = action_output_vuln_zone_hunter(google_results, bing_results, linkedin_results, time_spent_email,
                                                time_spent_total, clean_dump, sub_interest, domain, emailHunter_results,
                                                args, report_location, company, data_mine)
             else:
-                action_output_vuln_zone(google_results, bing_results, linkedin_results, time_spent_email,
+                result3 = action_output_vuln_zone(google_results, bing_results, linkedin_results, time_spent_email,
                                         time_spent_total, clean_dump, sub_interest, domain, report_location, company,
                                         data_mine)
 
@@ -376,8 +372,13 @@ if __name__ == "__main__":
     except Exception as e:
         print(e)
 
-    from Bluto.modules.output import all_data
+    all_results = {
+        "result1": result1,
+        "result2": result2,
+        "result3": result3,
+
+    }
     output_json: str = MAIN_DIR / output
 
     with open(output_json, "w") as jf:
-        json.dump(all_data(), jf, indent=2)
+        json.dump(all_results, jf, indent=2)

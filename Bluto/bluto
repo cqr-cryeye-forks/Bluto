@@ -215,12 +215,12 @@ if __name__ == "__main__":
                 # Outputting data
                 if api:
                     emailHunter_results = q4.get()
-                    action_output_wild_false_hunter(brute_results_dict, sub_interest, google_true_results,
+                    result1 = action_output_wild_false_hunter(brute_results_dict, sub_interest, google_true_results,
                                                     bing_true_results, linkedin_results, check_count, domain,
                                                     time_spent_email, time_spent_brute, time_spent_total,
                                                     emailHunter_results, args, report_location, company, data_mine)
                 else:
-                    action_output_wild_false(brute_results_dict, sub_interest, google_true_results, bing_true_results,
+                    result1 = action_output_wild_false(brute_results_dict, sub_interest, google_true_results, bing_true_results,
                                              linkedin_results, check_count, domain, time_spent_email, time_spent_brute,
                                              time_spent_total, report_location, company, data_mine)
             # WildCards False
@@ -286,13 +286,13 @@ if __name__ == "__main__":
                 brute_results_dict = dict((x.split(' ') for x in domains))
                 if api:
                     emailHunter_results = q4.get()
-                    action_output_wild_false_hunter(brute_results_dict, sub_interest, google_true_results,
+                    result2 = action_output_wild_false_hunter(brute_results_dict, sub_interest, google_true_results,
                                                     bing_true_results, linkedin_results, check_count, domain,
                                                     time_spent_email, time_spent_brute, time_spent_total,
                                                     emailHunter_results, args, report_location, company, data_mine)
                 # Outputting data
                 else:
-                    action_output_wild_false(brute_results_dict, sub_interest, google_true_results, bing_true_results,
+                    result2 = action_output_wild_false(brute_results_dict, sub_interest, google_true_results, bing_true_results,
                                              linkedin_results, check_count, domain, time_spent_email, time_spent_brute,
                                              time_spent_total, report_location, company, data_mine)
         else:
@@ -341,11 +341,11 @@ if __name__ == "__main__":
             # Outputting data
             if api:
                 emailHunter_results = q4.get()
-                action_output_vuln_zone_hunter(google_results, bing_results, linkedin_results, time_spent_email,
+                result3 = action_output_vuln_zone_hunter(google_results, bing_results, linkedin_results, time_spent_email,
                                                time_spent_total, clean_dump, sub_interest, domain, emailHunter_results,
                                                args, report_location, company, data_mine)
             else:
-                action_output_vuln_zone(google_results, bing_results, linkedin_results, time_spent_email,
+                result3 = action_output_vuln_zone(google_results, bing_results, linkedin_results, time_spent_email,
                                         time_spent_total, clean_dump, sub_interest, domain, report_location, company,
                                         data_mine)
 

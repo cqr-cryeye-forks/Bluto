@@ -67,7 +67,7 @@ def action_output_vuln_zone(google_results, bing_results, linkedin_results, time
     print('\n\nEmail Addresses:\n')
     print(["ALL RESULT 1\n", email_evidence_results, "\n", linkedin_evidence_results, "\n", pwned_results, "\n", report_location, "\n", company, "\n", data_mine])
     write_html(email_evidence_results, linkedin_evidence_results, pwned_results, report_location, company, data_mine)
-    write_json(email_evidence_results, linkedin_evidence_results, pwned_results, data_mine)
+    all_data1 = write_json(email_evidence_results, linkedin_evidence_results, pwned_results, data_mine)
     if f_emails:
         for email in f_emails:
             print(str(email).replace("u'", "").replace("'", "").replace('[', '').replace(']', ''))
@@ -188,6 +188,7 @@ def action_output_vuln_zone(google_results, bing_results, linkedin_results, time
     #     break
     # else:
     #     print('\tYour answer needs to be either yes|y|no|n rather than, {}'.format(answer))
+    return all_data1
 
 
 def action_output_vuln_zone_hunter(google_results, bing_results, linkedin_results, time_spent_email, time_spent_total,
@@ -252,7 +253,7 @@ def action_output_vuln_zone_hunter(google_results, bing_results, linkedin_result
     print('\n\nEmail Addresses:\n')
     print(["ALL RESULT 2\n", email_evidence_results, "\n", linkedin_evidence_results, "\n", pwned_results, "\n", report_location, "\n", company, "\n", data_mine])
     write_html(email_evidence_results, linkedin_evidence_results, pwned_results, report_location, company, data_mine)
-    write_json(email_evidence_results, linkedin_evidence_results, pwned_results, data_mine)
+    all_data2 = write_json(email_evidence_results, linkedin_evidence_results, pwned_results, data_mine)
     if f_emails:
         for email in f_emails:
             print(str(email).replace("u'", "").replace("'", "").replace('[', '').replace(']', ''))
@@ -374,6 +375,7 @@ def action_output_vuln_zone_hunter(google_results, bing_results, linkedin_result
     #         break
     # else:
     #     print('\tYour answer needs to be either yes|y|no|n rather than, {}'.format(answer))
+    return all_data2
 
 
 def action_output_wild_false(brute_results_dict, sub_interest, google_results, bing_true_results, linkedin_results,
@@ -433,7 +435,7 @@ def action_output_wild_false(brute_results_dict, sub_interest, google_results, b
     print(["ALL RESULT 3\n", email_evidence_results, "\n", linkedin_evidence_results, "\n", pwned_results, "\n", report_location, "\n", company, "\n", data_mine])
 
     write_html(email_evidence_results, linkedin_evidence_results, pwned_results, report_location, company, data_mine)
-    write_json(email_evidence_results, linkedin_evidence_results, pwned_results, data_mine)
+    all_data3 = write_json(email_evidence_results, linkedin_evidence_results, pwned_results, data_mine)
     if f_emails:
 
         for email in f_emails:
@@ -557,6 +559,7 @@ def action_output_wild_false(brute_results_dict, sub_interest, google_results, b
     #         break
     # else:
     #     print('\tYour answer needs to be either yes|y|no|n rather than, {}'.format(answer))
+    return all_data3
 
 
 def action_output_wild_false_hunter(brute_results_dict, sub_interest, google_results, bing_true_results,
@@ -621,7 +624,7 @@ def action_output_wild_false_hunter(brute_results_dict, sub_interest, google_res
     print(["ALL RESULT 4\n", email_evidence_results, "\n", linkedin_evidence_results, "\n", pwned_results, "\n", report_location, "\n", company, "\n", data_mine])
 
     write_html(email_evidence_results, linkedin_evidence_results, pwned_results, report_location, company, data_mine)
-    write_json(email_evidence_results, linkedin_evidence_results, pwned_results, data_mine)
+    all_data4 = write_json(email_evidence_results, linkedin_evidence_results, pwned_results, data_mine)
     if f_emails:
 
         for email in f_emails:
@@ -746,12 +749,12 @@ def action_output_wild_false_hunter(brute_results_dict, sub_interest, google_res
     #         break
     # else:
     #     print('\tYour answer needs to be either yes|y|no|n rather than, {}'.format(answer))
+    return all_data4
 
 
 def write_json(email_evidence_results, linkedin_evidence_results, pwned_results, data_mine):
     from Bluto.modules.get_dns import data_getdns1, data_getdns2
-    global data
-
+    data = {}
     download_count = None
     username_count = None
     software_count = None
@@ -816,30 +819,28 @@ def write_json(email_evidence_results, linkedin_evidence_results, pwned_results,
             }
             software_names_list.append(data_software)
     data.update(data_getdns1())
-    print("DATA 1\n", data, "\n\n")
+#     print("DATA 1\n", data, "\n\n")
     data.update(data_getdns2())
-    print("DATA 2\n", data, "\n\n")
+#     print("DATA 2\n", data, "\n\n")
     data.update({"emails": emails})
-    print("DATA 3\n", data, "\n\n")
+#     print("DATA 3\n", data, "\n\n")
     data.update({"linkedin": linkedin})
-    print("DATA 4\n", data, "\n\n")
+#     print("DATA 4\n", data, "\n\n")
     data.update({"pwned_results_list": pwned_results_list})
-    print("DATA 5\n", data, "\n\n")
+#     print("DATA 5\n", data, "\n\n")
     data.update({"list_mine_count": list_mine_count})
-    print("DATA 6\n", data, "\n\n")
+#     print("DATA 6\n", data, "\n\n")
     data.update({"user_names_list": user_names_list})
-    print("DATA 7\n", data, "\n\n")
+#     print("DATA 7\n", data, "\n\n")
     data.update({"software_names_list": software_names_list})
-    print("DATA 8\n", data, "\n\n")
+#     print("DATA 8\n", data, "\n\n")
     if data == {}:
-        data = {"Error": "Nothing found"}
-    elif data == "ERROR":
-        data = {"Error": "Domain Not Valid, Check You Have Entered It Correctly"}
+        data = {"Error": "Nothing found in Bluto"}
+    # elif data == "ERROR":
+    #     data = {"Error": "Domain Not Valid, Check You Have Entered It Correctly"}
 
-
-def all_data():
-    global data
     return data
+
 
 def write_html(email_evidence_results, linkedin_evidence_results, pwned_results, report_location, company, data_mine):
     info('Started HTML Report')
